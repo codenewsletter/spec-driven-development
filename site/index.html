@@ -1,0 +1,1616 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How Engineers at GitHub, Microsoft and Thoughtworks Run Spec-Driven Development &#8212; The Code</title>
+<meta name="description" content="A curated guide to spec-driven development for engineering teams: what a spec is, how to write one agents cannot misread, and how to run SDD end to end with GitHub Spec Kit.">
+<link rel="canonical" href="https://codenewsletter.ai/spec-driven-development">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How Engineers at GitHub, Microsoft and Thoughtworks Run Spec-Driven Development &#8212; The Code">
+<meta property="og:description" content="A curated guide to spec-driven development for engineering teams: what a spec is, how to write one agents cannot misread, and how to run SDD end to end with GitHub Spec Kit.">
+<meta property="og:site_name" content="The Code">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#F9F9F9">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJUaGUgQ29kZSI+CiAgPHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiBmaWxsPSIjMjg4Q0ZGIi8+CiAgPHJlY3QgeD0iMy42IiB5PSIzLjYiIHdpZHRoPSIxNi44IiBoZWlnaHQ9IjE2LjgiIGZpbGw9IiNGRkZGRkYiLz4KICA8cGF0aCBkPSJNOC4yIDYuNEwxNy43IDEyLjNMMTMuMiAxMy41TDE1LjUgMTcuOUwxMy4zIDE4LjlMMTEgMTQuNkw4LjIgMTcuNFoiIGZpbGw9IiMyODhDRkYiLz4KPC9zdmc+Cg==" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Eczar:wght@500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600&display=swap">
+
+<style>
+/* ============================================================
+   1 of 4 — tokens.css
+   Palette, type scale, space scale, motion. Brand-level only —
+   nothing page-specific belongs here.
+   ============================================================ */
+
+:root {
+  /* --- palette (authoritative) --------------------------- */
+  --bg:          #F9F9F9;
+  --surface:     #FFFFFF;
+  --primary:     #288CFF;   /* fill only — 3.17:1 on --bg, too low contrast for text */
+  --on-primary:  #FFFFFF;   /* 3.34:1 on --primary: large/bold text only */
+  --ink:         #000000;
+  --border:      #E4E4E4;
+
+  /* --- palette (derived; measured) ------------------------ */
+  --accent-ink:         #0F6FDB;  /* links & small text on light — 4.62:1 on bg */
+  --accent-ink-on-wash: #0D66CC;  /* same role on --wash        — 4.91:1        */
+  --ink-2:              #3F3F3F;  /* secondary prose           — 10.00:1        */
+  --ink-3:              #5C5C5C;  /* mono metadata, captions   —  6.35:1        */
+  --hairline:           #EFEFEF;  /* lighter rule than --border */
+  --wash:               #E9F2FF;  /* blue panel ground */
+  --wash-line:          #C4DDFF;
+  --alert:              #BF2E1C;  /* used only for "the problem" callouts — 5.51:1 */
+  --alert-wash:         #FDF0EE;
+  --alert-line:         #F3CFC9;
+
+  /* --- diagrams -------------------------------------------
+     One hue only. A weak node is the pale fill inside a
+     --graph-line border; a strong node is that same blue,
+     filled solid with a white label. Grey is structure only —
+     connectors, arrows, gates — never a semantic value. Never
+     introduce a second hue into a diagram (no green/red/amber)
+     even if the content has a "good/bad" contrast to draw —
+     express that with weak-vs-strong fill, not a new color. */
+  --graph-weak:   #E9F2FF;
+  --graph-strong: #0F6FDB;
+  --graph-line:   #0F6FDB;
+  --graph-rule:   #5C5C5C;
+
+  /* --- type ------------------------------------------------
+     Newsreader carries headlines and the wordmark. Eczar is
+     reserved for kickers/section labels only — never body text.
+     Inter is every functional sans use. JetBrains Mono is every
+     eyebrow, metadata line, caption, and code block. */
+  --serif:   'Newsreader', 'Iowan Old Style', Georgia, serif;
+  --display: 'Eczar', 'Newsreader', Georgia, serif;
+  --sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --mono:  'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* 7-step scale, 15px base */
+  --t-1: 11.5px;   /* mono eyebrows, tags */
+  --t-2: 13px;     /* mono metadata, captions */
+  --t-3: 15px;     /* base */
+  --t-4: 17px;     /* lede */
+  --t-5: 21px;     /* h3 / deck */
+  --t-6: clamp(26px, 3.2vw, 34px);          /* h2 */
+  --t-7: clamp(38px, 6.2vw, 64px);          /* h1 / display */
+
+  --lh-tight: 1.12;
+  --lh-snug:  1.34;
+  --lh-body:  1.62;
+
+  /* --- space (4px scale) --------------------------------- */
+  --s-1:  4px;  --s-2:  8px;  --s-3: 12px;  --s-4: 16px;
+  --s-5: 20px;  --s-6: 24px;  --s-8: 32px;  --s-10: 40px;
+  --s-12: 48px; --s-16: 64px; --s-20: 80px; --s-24: 96px;
+
+  /* --- radii, motion --------------------------------------
+     Square. Every corner on every page is 90 degrees — cards,
+     buttons, inputs, diagram nodes. Do not round anything;
+     don't reach for --r-lg expecting a curve, it resolves to 0
+     on purpose. The grid does the work rounding used to. */
+  --r-sm: 0; --r-md: 0; --r-lg: 0; --r-pill: 0;
+
+  --ease: cubic-bezier(.2, .6, .3, 1);
+  --dur-1: 120ms;
+  --dur-2: 220ms;
+
+  --measure: 68ch;      /* prose line length */
+  --page: 980px;        /* content column */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+</style>
+
+<style>
+/* ============================================================
+   2 of 4 — brand.css
+   The wordmark. Always use the inline SVG version (see
+   shell.html) — never link an external logo.png. A past
+   revision of the SDLC page referenced an external logo.png
+   and it silently vanished on a redeploy that didn't happen to
+   include it; inline SVG can't go missing like that.
+   ============================================================ */
+
+.brand {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: .12em;
+  color: var(--ink);
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.brand__word { display: inline-block; }
+.brand__logo { display: block; height: 20px; width: auto; }
+.brand--sm .brand__logo { height: 16px; }
+.brand--lg .brand__logo { height: 28px; }
+.brand--hero .brand__logo { height: clamp(34px, 5vw, 52px); }
+
+.brand__mark {
+  display: inline-block;
+  width: .72em;
+  height: .72em;
+  flex: none;
+  margin: 0 .06em;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%23288CFF'/%3E%3Crect x='3.6' y='3.6' width='16.8' height='16.8' fill='%23FFFFFF'/%3E%3Cpath d='M8.2 6.4L17.7 12.3L13.2 13.5L15.5 17.9L13.3 18.9L11 14.6L8.2 17.4Z' fill='%23288CFF'/%3E%3C/svg%3E");
+}
+
+.brand--sm   { font-size: 16px; letter-spacing: .14em; }
+.brand--lg   { font-size: 28px; }
+.brand--hero { font-size: clamp(34px, 5vw, 52px); }
+
+.brand--invert { color: var(--on-primary); }
+.brand--invert .brand__mark {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' fill='%23FFFFFF'/%3E%3Crect x='3.6' y='3.6' width='16.8' height='16.8' fill='%23288CFF'/%3E%3Cpath d='M8.2 6.4L17.7 12.3L13.2 13.5L15.5 17.9L13.3 18.9L11 14.6L8.2 17.4Z' fill='%23FFFFFF'/%3E%3C/svg%3E");
+}
+
+a.brand:hover { text-decoration: none; }
+a.brand:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 4px; }
+</style>
+
+<style>
+/* ============================================================
+   3 of 4 — base.css
+   Reset + components every page reuses: header, buttons, chips,
+   cards, code block, footer.
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 88px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: var(--t-3) / var(--lh-body) var(--sans);
+  font-feature-settings: 'cv05' 1, 'ss01' 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, p, ul, ol, figure, blockquote { margin: 0; }
+ul, ol { padding-left: 1.15em; }
+li { margin: var(--s-2) 0; }
+img, svg { max-width: 100%; }
+
+a { color: var(--accent-ink); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 3px; }
+
+.wrap { max-width: var(--page); margin-inline: auto; padding-inline: var(--s-6); }
+
+.display   { font-family: var(--serif); font-weight: 500; letter-spacing: -.015em; line-height: var(--lh-tight); }
+.meta      { font-family: var(--mono); font-size: var(--t-2); color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.eyebrow   { font-family: var(--mono); font-size: var(--t-1); font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-3); }
+.kicker    { font-family: var(--display); font-size: 17px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); line-height: 1; }
+.dim       { color: var(--ink-2); }
+
+.btn {
+  display: inline-flex; align-items: center; gap: var(--s-2);
+  font: 600 var(--t-3) / 1 var(--sans);
+  padding: 13px 22px;
+  border: 1px solid transparent;
+  border-radius: var(--r-pill);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--dur-1) var(--ease), color var(--dur-1) var(--ease),
+              border-color var(--dur-1) var(--ease), transform var(--dur-1) var(--ease);
+}
+.btn--primary { background: var(--primary); color: var(--on-primary); }
+.btn--primary:hover { background: var(--accent-ink); text-decoration: none; }
+.btn--ghost { background: var(--surface); color: var(--ink); border-color: var(--border); }
+.btn--ghost:hover { border-color: var(--ink); text-decoration: none; }
+.btn--sm { font-size: var(--t-2); padding: 9px 15px; }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font: 500 var(--t-2) / 1 var(--mono);
+  color: var(--ink-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  padding: 8px 13px;
+}
+.chip b { color: var(--ink); font-weight: 600; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s-6);
+}
+.card--wash { background: var(--wash); border-color: var(--wash-line); }
+.card--wash a { color: var(--accent-ink-on-wash); }
+.card--flush { padding: var(--s-6) var(--s-4) var(--s-4); }
+
+code {
+  font: 500 .9em / 1.4 var(--mono);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 1px 5px;
+}
+.codeblock pre code {
+  background: none; border: 0; padding: 0;
+  font: inherit; color: inherit;
+}
+.codeblock { position: relative; margin: var(--s-6) 0; }
+.codeblock pre {
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--s-6) var(--s-5) var(--s-5);
+  overflow-x: auto;
+  font: var(--t-2) / 1.6 var(--mono);
+  color: var(--ink);
+  tab-size: 2;
+}
+.codeblock__name {
+  position: absolute; top: -9px; left: 16px;
+  font: 600 var(--t-1) / 1 var(--mono);
+  color: var(--accent-ink);
+  background: var(--bg);
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+}
+.codeblock__copy {
+  position: absolute; top: 12px; right: 12px;
+  font: 600 var(--t-1) / 1 var(--mono);
+  color: var(--ink-3);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 7px 10px; cursor: pointer;
+  transition: color var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease);
+}
+.codeblock__copy:hover { color: var(--accent-ink); border-color: var(--accent-ink); }
+.codeblock__copy[data-state="done"] { color: var(--accent-ink); border-color: var(--accent-ink); }
+.codeblock__copy[data-state="manual"] { color: var(--alert); border-color: var(--alert); }
+
+figure { margin: 0; }
+figcaption {
+  font: 500 var(--t-2) / 1.5 var(--mono);
+  color: var(--ink-3);
+  margin-top: var(--s-3);
+}
+.scroller { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  margin-top: var(--s-24);
+  padding: var(--s-12) 0 var(--s-16);
+}
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+.skip-link {
+  position: absolute; left: var(--s-4); top: -60px; z-index: 100;
+  background: var(--ink); color: var(--on-primary);
+  padding: 10px 16px; border-radius: var(--r-sm);
+  font: 600 var(--t-2) / 1 var(--sans);
+  transition: top var(--dur-1) var(--ease);
+}
+.skip-link:focus { top: var(--s-3); text-decoration: none; }
+</style>
+
+<style>
+/* ============================================================
+   4 of 4 — page.css
+   Layout and composite components shared by every lead magnet.
+   Anything truly page-specific (a one-off diagram class, a
+   content-shaped component like a comparison grid) goes in a
+   FIFTH, separate <style> block per page — never edit this one
+   per-project, so it stays a stable, diffable shared layer.
+   ============================================================ */
+
+.topbar {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(249, 249, 249, .88);
+  backdrop-filter: saturate(1.4) blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.topbar__inner { display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); height: 66px; }
+.progress {
+  position: absolute; left: 0; bottom: -1px; height: 2px;
+  width: 0; background: var(--primary);
+  transition: width 80ms linear;
+}
+
+/* Rail nav only makes sense once there's real estate for it — hidden
+   below 1100px, where the topbar + in-page anchor links do the job. */
+.layout { display: block; }
+.rail { display: none; }
+
+@media (min-width: 1100px) {
+  .layout {
+    display: grid;
+    grid-template-columns: 190px minmax(0, 1fr);
+    gap: var(--s-16);
+    max-width: 1180px;
+  }
+  .rail { display: block; position: sticky; top: 106px; align-self: start; padding-top: var(--s-20); }
+  .rail ol { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--border); }
+  .rail li { margin: 0; }
+  .rail a {
+    display: block; padding: 7px 0 7px 14px; margin-left: -1px;
+    border-left: 2px solid transparent;
+    font: 500 var(--t-2) / 1.4 var(--mono);
+    color: var(--ink-3);
+    transition: color var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease);
+  }
+  .rail a:hover { color: var(--ink); text-decoration: none; }
+  .rail a[aria-current="true"] { color: var(--accent-ink); border-left-color: var(--primary); }
+  .rail__label { font: 600 var(--t-1) / 1 var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-3); margin-bottom: var(--s-3); }
+}
+
+.hero-divider { border: 0; border-top: 1px solid var(--border); margin: var(--s-10) 0 0; }
+
+.hero { padding: var(--s-20) 0 var(--s-10); }
+.hero h1 { font-size: var(--t-7); margin: var(--s-4) 0 var(--s-4); }
+.hero__sub { font-size: clamp(18px, 2.2vw, 22px); line-height: 1.5; color: var(--ink-2); max-width: 44ch; }
+.hero__meta { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-6); }
+
+.section { padding: var(--s-20) 0 0; scroll-margin-top: 96px; }
+.section h2 { font-family: var(--serif); font-weight: 500; font-size: var(--t-6); line-height: 1.18; letter-spacing: -.015em; margin: var(--s-3) 0 var(--s-5); text-wrap: balance; }
+.section p { margin: 0 0 var(--s-5); max-width: var(--measure); }
+
+/* every block element gets the same air on both sides, so nothing
+   butts into the paragraph that follows it. If you add a new
+   page-specific block component, add its class to this selector
+   list in your page's own extra <style> block. */
+.section > .card,
+.section > .codeblock,
+.section > .diagram,
+.section > .tablewrap,
+.section > .steps,
+.section > .do { margin-block: var(--s-10); }
+.section ul { max-width: var(--measure); margin-bottom: var(--s-5); }
+.lede { font-size: var(--t-4); line-height: 1.55; }
+
+/* "your problem" callout — the alert-colored strip used to open a
+   decision/section with the pain point before the fix. Sparing use
+   only; this is the one place --alert appears outside a diagram. */
+.problem {
+  border-left: 2px solid var(--alert);
+  background: var(--alert-wash);
+  padding: var(--s-4) var(--s-5);
+  margin: 0 0 var(--s-6);
+  color: var(--ink-2);
+  max-width: var(--measure);
+}
+.problem b { color: var(--alert); font-weight: 600; }
+
+/* "run it this week" callout — action items, checklists, playbooks */
+.do { background: var(--wash); border: 1px solid var(--wash-line); padding: var(--s-5) var(--s-6); max-width: var(--measure); }
+.do__k { font: 600 var(--t-1) / 1 var(--mono); letter-spacing: .18em; color: var(--accent-ink-on-wash); }
+.do p { margin: var(--s-2) 0 0; }
+.do__list { margin: var(--s-2) 0 0; padding-left: 1.1em; }
+.do__list li { margin: 0 0 var(--s-2); }
+.do__list li:last-child { margin-bottom: 0; }
+.do a { color: var(--accent-ink-on-wash); }
+
+/* mid-page newsletter CTA. Light wash panel, NOT a black block —
+   see SKILL.md for why the black version was retired. */
+.band {
+  margin-top: var(--s-20);
+  background: var(--wash); color: var(--ink);
+  border: 1px solid var(--wash-line);
+  padding: var(--s-8);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--s-5); flex-wrap: wrap;
+}
+.band h3 { font-family: var(--serif); font-weight: 500; font-size: var(--t-5); letter-spacing: -.01em; }
+.band p { margin: var(--s-2) 0 0; color: var(--ink-2); font-size: 14.5px; max-width: 46ch; }
+
+/* rollout/timeline steps as a card row */
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(195px, 1fr)); gap: var(--s-3); }
+.step { border: 1px solid var(--border); background: var(--surface); padding: var(--s-5); }
+.step__wk { font: 600 var(--t-1) / 1 var(--mono); letter-spacing: .18em; color: var(--primary); }
+.step__t { font: 600 var(--t-4) / 1.25 var(--mono); margin: var(--s-3) 0 var(--s-2); }
+.step p { font-size: 13.5px; line-height: 1.5; color: var(--ink-2); margin: 0; }
+
+/* generic data table — headers in uppercase mono, square, one hairline
+   per row. Wrap every table in .tablewrap so it scrolls on its own
+   axis instead of taking the page body with it. */
+.tablewrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); font-size: 14px; min-width: 480px; }
+th { font: 600 var(--t-1) / 1 var(--mono); letter-spacing: .1em; text-transform: uppercase; text-align: left; color: var(--ink-3); padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--bg); }
+td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--ink-2); }
+tr:last-child td { border-bottom: none; }
+td.tmono { font: var(--t-2) / 1 var(--mono); color: var(--ink); white-space: nowrap; }
+.up { color: var(--accent-ink-on-wash); font-weight: 600; }
+.down { color: var(--alert); font-weight: 600; }
+
+/* the tappable readiness/diagnostic scorecard */
+.score { padding: var(--s-2) 0 0; }
+.score__item {
+  display: flex; align-items: flex-start; gap: var(--s-3);
+  width: 100%; text-align: left;
+  padding: var(--s-3) var(--s-1);
+  border: 0; border-bottom: 1px solid var(--hairline);
+  background: none; cursor: pointer; color: inherit;
+  font: var(--t-3) / 1.5 var(--sans);
+}
+.score__item:last-of-type { border-bottom: 0; }
+.score__box {
+  width: 22px; height: 22px; flex: none; margin-top: 1px;
+  border: 1.5px solid #A8A8A8;
+  background: var(--surface);
+  display: grid; place-items: center;
+  transition: background var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease);
+}
+.score__box::after { content: ""; width: 10px; height: 6px; border-left: 2px solid var(--on-primary); border-bottom: 2px solid var(--on-primary); transform: rotate(-45deg) translate(1px, -1px); opacity: 0; }
+.score__item[aria-pressed="true"] .score__box { background: var(--primary); border-color: var(--primary); }
+.score__item[aria-pressed="true"] .score__box::after { opacity: 1; }
+.score__item[aria-pressed="true"] .score__text { color: var(--ink-3); }
+.score__fix { display: block; font: 500 var(--t-1) / 1.4 var(--mono); color: var(--ink-3); margin-top: 3px; }
+.score__result { display: flex; align-items: center; gap: var(--s-6); flex-wrap: wrap; margin-top: var(--s-5); padding-top: var(--s-5); border-top: 1px dashed var(--border); }
+.score__num { font-family: var(--serif); font-weight: 500; font-size: 44px; line-height: 1; color: var(--primary); font-variant-numeric: tabular-nums; }
+.score__verdict { margin: 0; color: var(--ink-2); flex: 1 1 260px; }
+
+.foot { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s-8); flex-wrap: wrap; }
+.foot__nav { display: grid; grid-template-columns: repeat(2, minmax(140px, auto)); gap: 6px var(--s-6); }
+.foot__nav a { font: 500 var(--t-2) / 1.5 var(--mono); color: var(--ink-3); }
+.foot__nav a:hover { color: var(--accent-ink); }
+.foot > .btn { margin-top: 2px; }
+
+/* inline SVG diagrams. Give each page's diagrams their own
+   min-width classes (e.g. .diagram--split, .diagram--relay) sized
+   to the actual viewBox so they only start scrolling once the
+   viewport is genuinely too narrow — don't reuse one generic
+   min-width across differently-sized diagrams. */
+.diagram { margin: var(--s-10) 0; }
+.diagram svg { display: block; width: 100%; height: auto; }
+.scroller { position: relative; }
+.scroll-hint { display: none; color: var(--accent-ink); }
+.scroller.is-scrollable ~ figcaption .scroll-hint { display: block; margin-bottom: 4px; }
+
+@media (max-width: 560px) {
+  .topbar__inner { height: 58px; }
+  .topbar .brand { font-size: 16px; }
+  .topbar .btn { font-size: 13px; padding: 10px 14px; }
+}
+
+@media (max-width: 720px) {
+  .hero { padding-top: var(--s-12); }
+  .hero__sub { max-width: none; }
+  .band { padding: var(--s-6); }
+}
+
+@media print {
+  .topbar, .rail, .band, .skip-link, .codeblock__copy { display: none !important; }
+  body { background: #fff; font-size: 11pt; }
+  .card, .step { break-inside: avoid; }
+  a[href^="http"]::after { content: " (" attr(href) ")"; font: 500 8pt var(--mono); color: #555; }
+}
+</style>
+
+<style>
+/* ============================================================
+   5 of 5 — module.css (page-specific)
+   Components the lead-magnet pages don't have, because a course
+   module is a different shape of document: numbered lessons, a
+   source-attribution block carrying the curation credit, a
+   module contents card, an end-of-module recap, and embedded
+   video. Everything here composes with the shared layers above;
+   nothing here overrides them.
+   ============================================================ */
+
+/* give the new block components the same breathing room the
+   shared layer gives .card/.codeblock/.do (see page.css) */
+.section > .srcq,
+.section > .video,
+.section > .figimg,
+.section > .recap { margin-block: var(--s-10); }
+
+/* --- landing screen -------------------------------------
+   The first screen is the course's front door, not a page
+   header: title, promise, one way in. It gets its own vertical
+   room so nothing below it competes, then hands off to the
+   module immediately after the rule. */
+.landing {
+  min-height: min(76vh, 620px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--s-16) 0 var(--s-12);
+}
+.landing h1 { font-size: var(--t-7); margin: var(--s-5) 0 var(--s-6); max-width: 17ch; text-wrap: balance; }
+.landing__sub { font-size: clamp(18px, 2.1vw, 22px); line-height: 1.5; color: var(--ink-2); max-width: 54ch; }
+.landing__cta { display: flex; align-items: center; gap: var(--s-5); flex-wrap: wrap; margin-top: var(--s-10); }
+
+@media (max-width: 720px) {
+  .landing { min-height: 0; padding: var(--s-12) 0 var(--s-10); }
+  .landing__sub { max-width: none; }
+}
+
+/* --- rail: module grouping ------------------------------
+   Lessons belong to a module, so the rail says so. The module
+   line sits outside #rail-list on purpose: scrollspy tracks
+   lessons, and a parent that also lit up would fight it. */
+@media (min-width: 1100px) {
+  .rail__mod { margin-bottom: var(--s-3); }
+  .rail__mod a {
+    display: block;
+    font: 600 var(--t-2) / 1.4 var(--sans);
+    color: var(--ink);
+    padding-bottom: var(--s-3);
+    border-bottom: 1px solid var(--border);
+  }
+  .rail__mod a:hover { color: var(--accent-ink); text-decoration: none; }
+  .rail__mod a[aria-current="true"] { color: var(--accent-ink); }
+}
+
+/* --- module opener --------------------------------------
+   Every module opens with one of these, so it needs to be a
+   real tier between the guide landing and a lesson. It was
+   rendering at the same 34px as a lesson h2, which flattened
+   guide > module > lesson into two sizes instead of three.
+   Sits above the lessons it introduces and closes with a rule
+   so the boundary is visible, not just implied by spacing. */
+.section--module { padding-top: var(--s-12); padding-bottom: var(--s-12); border-bottom: 1px solid var(--border); }
+.section--module h2 { font-size: clamp(30px, 4.2vw, 44px); margin: var(--s-4) 0 var(--s-6); }
+.section--module .lede { max-width: 60ch; }
+.section--module .toc { margin-top: var(--s-8); }
+
+/* Align the rail with the first thing it points at. page.css
+   pads the rail 80px to clear the old hero; the module opener
+   starts 48px in, so the two headings sat 50px apart once the
+   rail stuck. Overridden here rather than in the shared layer,
+   which stays untouched and diffable. */
+@media (min-width: 1100px) {
+  .rail { padding-top: var(--s-8); }
+}
+
+/* --- anchor landing -------------------------------------
+   A section carries its own top padding for rhythm while you
+   scroll, but on a jump that padding stacked on top of
+   scroll-padding-top (88px, the sticky-topbar allowance) and
+   page.css's 96px scroll-margin, dropping the heading ~270px
+   down the viewport. A negative scroll-margin exactly equal to
+   each section's own top padding cancels it, so scroll-padding
+   alone decides where the heading lands: just under the topbar.
+   Keep these two in sync with the padding-top values above. */
+.section          { scroll-margin-top: -80px; }  /* cancels .section padding-top: var(--s-20) */
+.section--module  { scroll-margin-top: -48px; }  /* cancels its padding-top: var(--s-12) */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* --- landing view ---------------------------------------
+   The first screen is the hero plus the index of what follows:
+   modules on the course landing, lessons on a module page. It
+   is top-aligned, starting on the same line the sidebar starts
+   on, and everything fits above the fold without a scroll.
+
+   Two things pay for that. The index runs in two columns on
+   wide screens, halving the tallest block on the page. And the
+   type is clamped against viewport height as well as width, so
+   a short screen scales down instead of overflowing.
+
+   The base sheet's fixed "min-height: 620px" on .landing is
+   dropped; the hero is only as tall as its content.
+   ========================================================= */
+.landing {
+  min-height: 0;
+  display: flex; flex-direction: column; justify-content: flex-start;
+  /* The rail is sticky at 106px and its list starts 48px into that,
+     while the hero box starts at the topbar, 67px. Matching that puts
+     the hero's first line level with the sidebar's first line. */
+  padding: 36px 0 0;   /* was 87px, when every landing opened with an eyebrow */
+}
+/* wins over ".landing .display" regardless of source order, which a
+   bare ".landing .display--xl" does not: equal specificity, later rule wins. */
+.landing .display.display--xl { max-width: none; font-size: clamp(30px, min(5vw, 7vh), 50px); }
+/* Between the rail breakpoint and the width where .layout hits its 1180px
+   cap, the rail takes width out of the column faster than 5vw takes it out
+   of the headline, so the hero line wraps to three. Scaling off vw more
+   slowly across that band alone keeps it to two. */
+@media (min-width: 1100px) and (max-width: 1300px) {
+  .landing .display.display--xl { font-size: min(4vw, 7vh, 50px); }
+}
+.landing .display { max-width: 640px; font-size: clamp(28px, min(4.2vw, 5vh), 52px); line-height: 1.07; margin: clamp(8px, 1.3vh, 16px) 0 clamp(10px, 1.5vh, 18px); }
+.landing__sub { max-width: 58ch; font-size: clamp(15px, 1.9vh, 18px); }
+.landing__sub + .landing__sub { margin-top: clamp(8px, 1.3vh, 14px); }
+.landing .landing__cta { margin-top: clamp(12px, 1.6vh, 28px); }
+.hero-divider { margin-top: clamp(10px, 1.4vh, 24px); }
+.section--contents { padding-top: clamp(10px, 1.4vh, 24px); }
+.section--contents .lede { margin-bottom: clamp(8px, 1.4vh, 16px); font-size: clamp(15px, 1.8vh, 17px); }
+.section--contents .next { margin-top: clamp(10px, 1.4vh, 26px); padding-top: clamp(8px, 1.2vh, 18px); }
+.section--contents .next h3 { font-size: clamp(18px, 2.5vh, 26px); }
+.section--contents .next p { font-size: clamp(13.5px, 1.8vh, 14.5px); margin-top: clamp(4px, .8vh, 8px); }
+.toc.toc--split { max-width: none; padding: clamp(12px, 1.6vh, 22px); }
+.toc.toc--split ol { margin-top: clamp(6px, 1vh, 14px); }
+@media (min-width: 900px) {
+  /* One column, in order. Rows run the full width, so a title that
+     wrapped to two lines in a half-width column now fits on one:
+     the list reads sequentially and is no taller for it. */
+  .toc.toc--split a { padding: clamp(3px, .6vh, 9px) 0; align-items: baseline; }
+  .toc.toc--split .toc__t { font-size: clamp(12.5px, 1.65vh, 15px); line-height: 1.3; }
+}
+/* @@END-LANDING@@ */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* --- course rail ----------------------------------------
+   The sidebar is the course's spine, not a per-page table of
+   contents: every module is listed, the current one expanded.
+   Generated by tools/build_rail.py, so all five pages carry an
+   identical nav. It scrolls on its own axis, because five
+   modules of lessons is taller than most viewports.
+
+   Module heads and lesson rows must read as two different
+   things. They share the sans face, so the separation is
+   carried by size (13 vs 12), weight (600 vs 400), colour, a
+   hairline above each group, and the indent of the lesson
+   list behind its own rule. The lesson numbers stay mono, in
+   their own column, so titles align down a single left edge.
+
+   Only the lesson list carries a vertical rule. Module heads
+   sit flush against the rail's left edge with no bar of their
+   own, so the rule reads as "these belong to that heading".
+   Both list rules need the ".rail ol" prefix: the base sheet
+   styles every ol in the rail, and a bare class selector loses
+   to it on specificity no matter where it sits.
+   The current module is marked by accent colour alone.
+   ============================================================ */
+@media (min-width: 1100px) {
+  .layout { grid-template-columns: 286px minmax(0, 1fr); gap: var(--s-12); }
+
+  .rail {
+    padding-top: var(--s-8);
+    max-height: calc(100vh - 126px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  .rail__label { color: #8C8C8C; }
+  .rail ol.rail__course { list-style: none; margin: var(--s-4) 0 0; padding: 0; border-left: 0; }
+
+  .rail__group { margin: 0; padding: var(--s-5) 0 var(--s-6); border-top: 1px solid var(--hairline); }
+  .rail__group:first-child { padding-top: 0; padding-bottom: var(--s-3); border-top: 0; }
+  .rail__group:first-child .rail__ghead { padding-bottom: 0; }
+  .rail__group:last-child { padding-bottom: var(--s-8); }
+
+  /* Needs the ".rail" prefix for the same reason the list rules do:
+     the base sheet's ".rail a" outweighs a bare class. Heads use the
+     sans face, like the lesson rows, so the split is carried by weight,
+     size, colour and the outdent instead. Zero padding puts the head
+     flush with the lesson rule, outdented from the lesson numbers. */
+  .rail .rail__ghead {
+    display: flex; align-items: baseline; gap: var(--s-2);
+    padding: 0 0 var(--s-3);
+    border-left: 0; margin-left: 0;
+    color: var(--ink);
+    font: 600 13px / 1.4 var(--sans);
+  }
+  .rail .rail__ghead:hover { color: var(--accent-ink); text-decoration: none; }
+  .rail__gt { flex: 1 1 auto; }
+  .rail .is-soon > .rail__ghead { color: #8C8C8C; }
+  .rail .is-current > .rail__ghead { color: var(--accent-ink); }
+
+  .is-soon > .rail__ghead { color: #8C8C8C; font-weight: 500; cursor: default; }
+  .rail__soon {
+    flex: none;
+    font: 500 9px / 1 var(--mono);
+    letter-spacing: .1em; text-transform: uppercase;
+    color: #A0A0A0;
+    border: 1px solid var(--hairline);
+    padding: 3px 5px;
+  }
+
+  .rail ol.rail__lessons {
+    list-style: none; margin: 0; padding: 0;
+    border-left: 1px solid var(--hairline);
+  }
+  .rail__lessons li { margin: 0; }
+  .rail__lessons a {
+    display: flex; gap: var(--s-3);
+    padding: 6px 10px 6px 13px; margin-left: -1px;
+    border-left: 2px solid transparent;
+    font: 400 12px / 1.5 var(--sans);
+    color: var(--ink-2);
+    transition: color var(--dur-1) var(--ease), background var(--dur-1) var(--ease),
+                border-color var(--dur-1) var(--ease);
+  }
+  .rail__lessons a:hover { color: var(--ink); background: #F3F3F3; text-decoration: none; }
+  .rail__ln {
+    flex: none; min-width: 2.15em;
+    font: 500 10.5px / 1.72 var(--mono);
+    color: #9A9A9A;
+    font-variant-numeric: tabular-nums;
+  }
+  .rail__lessons a[aria-current="true"] {
+    color: var(--accent-ink);
+    background: var(--wash);
+    border-left-color: var(--primary);
+    font-weight: 500;
+  }
+  .rail__lessons a[aria-current="true"] .rail__ln { color: var(--accent-ink-on-wash); }
+}
+/* On What's Next the first block sits straight under the hero
+   divider, so its own top border drew a second line 30px below the
+   first. Only that page puts a .next first in the section. */
+.section--contents > .next:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+
+/* The topbar sat at the 980px measure while the content below it sits
+   at 1180, so the subscribe button stopped 100px short of the content's
+   right edge. Matching them lines the bar up with the columns. */
+.topbar__inner { max-width: 1180px; }
+
+/* --- course contents on mobile ---------------------------
+   Below the rail breakpoint the sidebar became display:none,
+   which left phones with no way to move around the course at
+   all. The same nav is now a bottom sheet: it slides up from
+   the thumb, over a scrim, with the page behind it locked.
+
+   The sheet is the rail element itself rather than a copy, so
+   there is one nav in the DOM and the scrollspy keeps marking
+   the current lesson in it either way.
+   ========================================================= */
+.rail__sheetbar { display: none; }
+.sheetbtn, .sheet-scrim { display: none; }
+
+@media (max-width: 1099px) {
+  .rail {
+    display: block;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 95;
+    max-height: 74vh; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain;
+    background: var(--bg-elevated, #FFFFFF);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -14px 34px rgba(7, 7, 10, .14);
+    padding: 0 var(--s-5) calc(var(--s-6) + env(safe-area-inset-bottom));
+    transform: translateY(102%);
+    visibility: hidden;
+    transition: transform .22s cubic-bezier(.2, .9, .3, 1), visibility 0s linear .22s;
+  }
+  .rail.is-open { transform: translateY(0); visibility: visible; transition: transform .22s cubic-bezier(.2, .9, .3, 1), visibility 0s; }
+
+  .rail__sheetbar {
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 2;
+    margin: 0 calc(var(--s-5) * -1); padding: 14px var(--s-5);
+    background: inherit; border-bottom: 1px solid var(--hairline);
+  }
+  .rail__sheettitle { font: 600 15px / 1 var(--sans); color: var(--ink); }
+  .rail__done { font: 500 14px / 1 var(--sans); color: var(--accent-ink); background: none; border: 0; padding: 10px 2px; cursor: pointer; }
+
+  /* the list reset and the number/title columns live in the desktop
+     block, so they have to be restated here or the sheet shows raw
+     <ol> markers and runs "1.1" into the title */
+  .rail ol.rail__course, .rail ol.rail__lessons { list-style: none; margin: 0; padding: 0; }
+  .rail ol.rail__course { margin-top: var(--s-4); }
+  .rail__course > li, .rail__lessons li { margin: 0; }
+  .rail .rail__ghead { display: flex; align-items: baseline; gap: var(--s-2); text-decoration: none; }
+  .rail__lessons a { display: flex; gap: var(--s-3); border-left: 2px solid transparent; margin-left: -1px; }
+  .rail__ln { flex: none; color: #9A9A9A; font-variant-numeric: tabular-nums; }
+  .rail__lessons a[aria-current="true"] { color: var(--accent-ink); background: var(--wash); border-left-color: var(--primary); font-weight: 500; }
+  .rail__lessons a[aria-current="true"] .rail__ln { color: var(--accent-ink-on-wash); }
+  .rail__group { padding: var(--s-4) 0 var(--s-5); border-top: 1px solid var(--hairline); }
+  .rail__group:first-child { padding-top: var(--s-4); padding-bottom: var(--s-2); border-top: 0; }
+  .rail .rail__ghead { padding: 8px 0; color: var(--ink); font: 600 15px / 1.35 var(--sans); }
+  .rail .is-current > .rail__ghead { color: var(--accent-ink); }
+  .rail ol.rail__lessons { border-left: 1px solid var(--hairline); }
+  .rail__lessons a { padding: 11px 10px 11px 14px; font: 400 14.5px / 1.45 var(--sans); color: var(--ink-2); }
+  .rail__ln { min-width: 2.4em; font: 500 12px / 1.5 var(--mono); }
+
+  .sheetbtn {
+    display: inline-flex; align-items: center; gap: 8px;
+    position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 93;
+    padding: 13px 18px; border: 0;
+    background: var(--primary); color: var(--on-primary);
+    font: 600 14px / 1 var(--sans); cursor: pointer;
+    box-shadow: 0 8px 22px rgba(7, 7, 10, .22);
+  }
+  .sheetbtn svg { width: 16px; height: 16px; }
+  body.has-sheet .sheetbtn { opacity: 0; pointer-events: none; }
+
+  .sheet-scrim {
+    display: block; position: fixed; inset: 0; z-index: 94;
+    background: rgba(7, 7, 10, .4);
+    opacity: 0; pointer-events: none; transition: opacity .22s;
+  }
+  .sheet-scrim.is-on { opacity: 1; pointer-events: auto; }
+  body.has-sheet { overflow: hidden; }
+
+  /* the hero's top padding exists to line up with the rail, which
+     is not beside the content at this width */
+  .landing { padding-top: var(--s-8); }
+
+  /* the trigger sits over the last of the page, so the end of every
+     page needs room to clear it */
+  .site-footer { padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
+}
+
+@media (max-width: 640px) {
+  /* 15px is the desktop base. On a phone held at arm's length the
+     same measure reads better one step up, and the line box grows
+     with it so the paragraph does not tighten. */
+  :root { --t-3: 16px; }
+  .landing__sub { font-size: clamp(16px, 1.9vh, 18px); }
+
+  /* keep "6 lessons" together: at this width it was breaking between
+     the number and the word */
+  .toc--split .toc__t .meta { white-space: nowrap; }
+}
+
+@media (max-width: 1099px) {
+  /* Diagrams were authored at ~610px and carry min-width: 600px, so on a
+     phone they had to be dragged sideways and were never seen whole. They
+     now fit the column, and the viewer below is how a reader gets back to
+     a legible size. */
+  .scroller { overflow-x: visible; }
+  .scroller > svg[class*="diagram--"] { min-width: 0; width: 100%; height: auto; }
+
+  .card--flush figure:not(.video) { cursor: zoom-in; }
+  .card--flush figure:not(.video) figcaption::before {
+    content: "Tap to enlarge · ";
+    color: var(--accent-ink);
+  }
+
+  .figview { position: fixed; inset: 0; z-index: 98; background: rgba(7, 7, 10, .93); }
+  .figview[hidden] { display: none; }
+  .figview__close {
+    position: absolute; top: 0; right: 0; height: 52px; padding: 0 18px; z-index: 2;
+    background: none; border: 0; color: #FFFFFF; font: 600 15px / 1 var(--sans); cursor: pointer;
+  }
+  .figview__scroll {
+    position: absolute; inset: 52px 0 0; overflow: auto;
+    -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y pinch-zoom;
+  }
+  .figview__inner { display: inline-block; min-width: 100%; padding: 16px; background: #FFFFFF; }
+  .figview__inner svg, .figview__inner img { display: block; max-width: none; }
+
+
+  /* a long inline code token cannot wrap and was pushing the page
+     sideways; block code keeps its own scroll and is unaffected */
+  :not(pre) > code { overflow-wrap: anywhere; }
+}
+/* @@END-COURSE-RAIL@@ */
+
+/* --- lesson header --------------------------------------
+   The lesson number is metadata, not part of the title, so it
+   sits above the h2 as a mono kicker instead of being baked
+   into the heading text. Keeps the h2 clean for SEO and for
+   anyone reading the page with a screen reader's heading list. */
+.lesson__num {
+  font: 600 var(--t-1) / 1 var(--mono);
+  letter-spacing: .2em;
+  color: var(--accent-ink);
+}
+.section h2 .em { font-style: italic; }
+
+/* --- source attribution ---------------------------------
+   The whole guide is curation-first: every claim traces to one
+   named source. That promise needs a real component, not a bare
+   blockquote — the quote and the byline are one unit and must
+   never be separated by a column break or a copy-paste. */
+.srcq {
+  border-left: 2px solid var(--primary);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: var(--s-5) var(--s-6);
+  max-width: var(--measure);
+}
+.srcq blockquote {
+  font-family: var(--serif);
+  font-size: var(--t-5);
+  line-height: 1.4;
+  letter-spacing: -.01em;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+.srcq figcaption {
+  margin-top: var(--s-4);
+  font: 500 var(--t-2) / 1.5 var(--mono);
+  color: var(--ink-3);
+}
+.srcq figcaption b { color: var(--ink); font-weight: 600; }
+
+/* --- module contents card ------------------------------- */
+.toc { max-width: var(--measure); }
+.toc ol { list-style: none; margin: var(--s-4) 0 0; padding: 0; counter-reset: none; }
+.toc li { margin: 0; border-top: 1px solid var(--hairline); }
+.toc li:first-child { border-top: 0; }
+.toc a {
+  display: flex; align-items: baseline; gap: var(--s-4);
+  padding: 11px 0;
+  color: var(--ink);
+}
+.toc a:hover { color: var(--accent-ink); text-decoration: none; }
+.toc a:hover .toc__t { text-decoration: underline; text-underline-offset: 2px; }
+.toc__n { font: 600 var(--t-2) / 1.4 var(--mono); color: var(--accent-ink); flex: none; min-width: 2.4em; }
+.toc__t { font-size: 15px; line-height: 1.45; }
+
+/* --- end-of-module recap -------------------------------- */
+.recap { background: var(--wash); border: 1px solid var(--wash-line); padding: var(--s-6) var(--s-8); max-width: var(--measure); }
+.recap__k { font: 600 var(--t-1) / 1 var(--mono); letter-spacing: .18em; color: var(--accent-ink-on-wash); }
+.recap h3 { font-family: var(--serif); font-weight: 500; font-size: var(--t-5); letter-spacing: -.01em; margin: var(--s-3) 0 var(--s-4); }
+.recap ul { margin: 0; padding-left: 1.1em; }
+.recap li { margin: 0 0 var(--s-3); color: var(--ink-2); }
+.recap li:last-child { margin-bottom: 0; }
+
+/* --- embedded video -------------------------------------
+   The source document showed these as flat screenshots of a
+   YouTube player, which is a dead end on the web — here they
+   are the actual videos. nocookie host + lazy loading so an
+   unwatched embed costs the reader nothing. */
+.video { max-width: none; }
+.video__frame { position: relative; aspect-ratio: 16 / 9; background: var(--surface); border: 1px solid var(--border); }
+.video__frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
+/* Every figure sits at the same width as the prose, so the page
+   has one right-hand edge instead of two. .card--flush is used
+   only by figure cards, so capping it here catches diagrams and
+   source images alike; .video matches. The diagrams are authored
+   at ~610-unit viewBoxes to render close to 1:1 at this width
+   rather than being scaled down into unreadable labels. */
+.card--flush, .video { max-width: var(--measure); }
+
+/* --- source image figure --------------------------------
+   Reserved for source figures that genuinely cannot be redrawn:
+   charts whose underlying numbers we do not have. Rebuilding one
+   would mean reading values off a bitmap by eye and publishing
+   the guesses under someone else's name. Structural figures are
+   NOT in this category — those get redrawn as inline SVG in the
+   one-hue system, like .diagram--context does. */
+.figimg { max-width: none; }
+.figimg img { display: block; width: 100%; height: auto; border: 1px solid var(--border); background: var(--surface); }
+
+/* --- authored diagrams ----------------------------------
+   Sized to their actual viewBox so each only starts scrolling
+   once the viewport is genuinely too narrow for it. */
+.diagram--loop { min-width: 600px; }
+.diagram--sdk  { min-width: 600px; }
+.diagram--context { min-width: 600px; }
+
+/* --- next-module handoff -------------------------------- */
+.next { display: flex; align-items: center; justify-content: space-between; gap: var(--s-5); flex-wrap: wrap; margin-top: var(--s-10); border-top: 1px solid var(--border); padding-top: var(--s-6); max-width: var(--measure); }
+.next__k { font: 600 var(--t-1) / 1 var(--mono); letter-spacing: .18em; color: var(--ink-3); }
+.next h3 { font-family: var(--serif); font-weight: 500; font-size: var(--t-5); letter-spacing: -.01em; margin: var(--s-2) 0 0; }
+.next p { margin: var(--s-2) 0 0; color: var(--ink-2); font-size: 14.5px; max-width: 44ch; }
+
+@media (max-width: 720px) {
+  .srcq { padding: var(--s-4) var(--s-5); }
+  .recap { padding: var(--s-5) var(--s-6); }
+}
+</style>
+
+<style>
+/* ============================================================
+   6 of 6 — module-2 additions
+   Module 2 is the first hands-on module, so it introduces one
+   component Module 1 had no use for: the "Try This in Claude
+   Code" exercise. It follows a fixed Goal / Steps / Expected
+   result shape so a reader can execute it top to bottom without
+   parsing prose.
+   ============================================================ */
+.section > .tryit { margin-block: var(--s-10); }
+
+.tryit {
+  background: var(--wash);
+  border: 1px solid var(--wash-line);
+  padding: var(--s-6) var(--s-6) var(--s-5);
+  max-width: var(--measure);
+}
+.tryit__k {
+  font: 600 var(--t-1) / 1 var(--mono);
+  letter-spacing: .18em;
+  color: var(--accent-ink-on-wash);
+}
+.tryit p { margin: var(--s-4) 0 0; }
+.tryit ol { margin: var(--s-3) 0 0; padding-left: 1.2em; }
+.tryit li { margin: 0 0 var(--s-3); }
+.tryit li:last-child { margin-bottom: 0; }
+.tryit a { color: var(--accent-ink-on-wash); }
+.tryit code { background: var(--surface); border-color: var(--wash-line); }
+.tryit__label { font-weight: 600; color: var(--ink); }
+
+/* A codeblock inside the wash panel needs its own ground so it
+   does not disappear into the panel. */
+.tryit .codeblock { margin: var(--s-3) 0 0; }
+.tryit .codeblock pre { border-color: var(--wash-line); }
+.tryit .codeblock__name { background: var(--wash); border-color: var(--wash-line); }
+
+/* Code blocks are content the reader copies, so they sit at the
+   same measure as everything else rather than running the full
+   column. Without this they render at 878 against 643 prose. */
+.codeblock { max-width: var(--measure); }
+
+/* Tables carry the two strategy comparisons in 2.5. The shared
+   layer already styles th/td; this only sets the column rhythm. */
+.section > .tablewrap { margin-block: var(--s-10); max-width: var(--measure); }
+.tablewrap table { min-width: 560px; }
+.tablewrap td:first-child { font-weight: 600; color: var(--ink); white-space: nowrap; }
+</style>
+
+<style>
+/* ============================================================
+   7 of 7 — spec-driven-development additions
+   ============================================================ */
+.section h3 { font: 600 18px / 1.35 var(--sans); letter-spacing: -.005em; margin: var(--s-8) 0 var(--s-3); max-width: var(--measure); text-wrap: balance; }
+.section ol { max-width: var(--measure); margin-bottom: var(--s-5); }
+.section > .placeholder { margin-block: var(--s-8); }
+.placeholder { border: 1px dashed var(--wash-line); background: var(--wash); padding: var(--s-4) var(--s-5); max-width: var(--measure); }
+.placeholder__k { font: 600 var(--t-1) / 1 var(--mono); letter-spacing: .18em; color: var(--accent-ink-on-wash); }
+.placeholder p { margin: var(--s-2) 0 0; color: var(--ink-2); font-size: 14px; }
+.tryit__k b { color: var(--ink); letter-spacing: 0; text-transform: none; font-weight: 600; }
+.tryit ol, .tryit ul { max-width: none; }
+.tryit .codeblock { margin-bottom: var(--s-4); }
+.codeblock--wrap pre { white-space: pre-wrap; overflow-wrap: anywhere; padding-right: 84px; }
+.srcq figcaption b { font-weight: 600; }
+.landing .landing__sub + .landing__sub { margin-top: var(--s-3); }
+.section > .do { max-width: var(--measure); }
+.section > .card { max-width: var(--measure); }
+.tryit .card { background: var(--surface); border-color: var(--wash-line); padding: var(--s-4) var(--s-5); margin-top: var(--s-3); }
+.score__group { font: 600 var(--t-1) / 1 var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--ink-3); padding: var(--s-1) var(--s-1) var(--s-2); }
+.score__text { display: grid; grid-template-columns: 1.6em minmax(0, 1fr); column-gap: var(--s-3); align-items: baseline; }
+.score__n { font: 500 var(--t-2) / 1.5 var(--mono); color: var(--accent-ink); font-variant-numeric: tabular-nums; }
+.score__text .score__fix { grid-column: 2; }
+.score__item[aria-pressed="true"] .score__n { color: var(--ink-3); }
+.score__note { margin: var(--s-4) var(--s-1) 0; font-size: 14px; color: var(--ink-2); max-width: none; }
+.section > .pairs { margin-block: var(--s-8); max-width: var(--measure); }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-3); margin-bottom: var(--s-3); }
+.pair__side { padding: var(--s-4) var(--s-5); border: 1px solid var(--border); background: var(--surface); }
+.pair__side--after { background: var(--wash); border-color: var(--wash-line); }
+.pair__k { display: block; font: 600 var(--t-1) / 1 var(--mono); letter-spacing: .18em; color: var(--ink-3); margin-bottom: var(--s-3); }
+.pair__side--after .pair__k { color: var(--accent-ink-on-wash); }
+.pair__side p { margin: 0; font: 500 var(--t-2) / 1.6 var(--mono); color: var(--ink-2); max-width: none; }
+.pair__side--after p { color: var(--ink); }
+@media (max-width: 640px) { .pair { grid-template-columns: 1fr; } }
+.section > .walk { margin-block: var(--s-8); max-width: none; }
+.walk { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: var(--s-4); align-items: start; }
+.walk__spec { background: var(--surface); border: 1px solid var(--border); height: 560px; overflow-y: auto; overscroll-behavior: contain; padding: var(--s-4) var(--s-5); scroll-behavior: smooth; }
+.walk__spec:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: -2px; }
+.walk__doc { font-size: 13.5px; line-height: 1.55; color: #7A7A7A; }
+.walk__doc h4, .walk__doc h5, .walk__doc h6 { font-family: var(--sans); color: #6A6A6A; margin: 0; }
+.walk__doc code { color: inherit; border-color: var(--hairline); }
+.walk__doc strong { color: inherit; }
+.walk__blk.is-on, .walk__blk.is-on strong { color: var(--ink); }
+.walk__blk.is-on code { color: var(--ink); border-color: var(--border); }
+.walk__doc h4 { font-size: 16px; font-weight: 600; }
+.walk__doc h5 { font-size: 14px; font-weight: 600; }
+.walk__doc h6 { font-size: 13.5px; font-weight: 600; }
+.walk__doc p { margin: 0; max-width: none; }
+.walk__doc ul, .walk__doc ol { margin: 0; max-width: none; padding-left: 1.2em; }
+.walk__doc li { margin: 2px 0; }
+.walk__doc code { font-size: .85em; }
+.walk__doc table { min-width: 0; font-size: 12.5px; }
+.walk__doc th, .walk__doc td { padding: 6px 10px; }
+.walk__blk { padding: 6px 10px; margin: 0 -10px; border-left: 2px solid transparent; cursor: pointer; transition: background var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease); }
+.walk__blk--plain { cursor: default; }
+.walk__blk.is-on { background: var(--wash); border-left-color: var(--primary); color: var(--ink); }
+.walk__blk.is-on h4, .walk__blk.is-on h5, .walk__blk.is-on h6 { color: var(--accent-ink-on-wash); }
+.walk__credit { margin: var(--s-5) 0 0; font: 500 var(--t-1) / 1.5 var(--mono); color: var(--ink-3); max-width: none; }
+.walk__notes { position: sticky; top: 90px; background: var(--wash); border: 1px solid var(--wash-line); padding: var(--s-5); }
+.walk__bar { display: flex; align-items: center; justify-content: space-between; gap: var(--s-2); margin-bottom: var(--s-5); }
+.walk__bar .btn { flex: 1 1 0; justify-content: center; }
+.walk__dots { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; }
+.walk__dots li { margin: 0; }
+.walk__dots button { width: 24px; height: 24px; border: 1px solid var(--wash-line); background: var(--surface); color: var(--ink-3); font: 600 11px / 1 var(--mono); cursor: pointer; }
+.walk__dots button.is-on { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.walk__k { font: 600 var(--t-1) / 1 var(--mono); letter-spacing: .18em; color: var(--accent-ink-on-wash); }
+.walk__loc { margin: var(--s-2) 0 0; font: 500 var(--t-2) / 1.5 var(--mono); color: var(--ink-3); max-width: none; }
+.walk__note h4 { font: 600 17px / 1.3 var(--sans); margin: var(--s-3) 0 var(--s-3); color: var(--ink); text-wrap: balance; }
+.walk__tag { display: inline-block; margin-top: var(--s-2); padding: 5px 9px; border: 1px solid var(--wash-line); background: var(--surface); font: 600 var(--t-1) / 1 var(--mono); letter-spacing: .04em; color: var(--accent-ink-on-wash); }
+.walk__tag:hover { border-color: var(--accent-ink); text-decoration: none; }
+.walk__note p { margin: 0 0 var(--s-3); max-width: none; font-size: 14.5px; color: var(--ink-2); }
+.walk__note p:last-child { margin-bottom: 0; }
+@media (max-width: 479px) { .walk__dots { display: none; } }
+@media (max-width: 899px) {
+  .walk { grid-template-columns: 1fr; }
+  .walk__spec { height: 340px; order: 2; }
+  .walk__notes { position: static; order: 1; }
+}
+.diagram--levels { min-width: 600px; }
+.diagram--handoffs { min-width: 600px; }
+.diagram--scopes { min-width: 600px; }
+.diagram--decide { min-width: 600px; }
+.diagram--sections { min-width: 600px; }
+.diagram--tiers { min-width: 600px; }
+.diagram--loop { min-width: 600px; }
+.diagram--spike { min-width: 600px; }
+.diagram--stages { min-width: 600px; }
+.diagram--pillars { min-width: 600px; }
+.diagram--roles { min-width: 600px; }
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <div class="wrap topbar__inner">
+    <a class="brand" href="#top" aria-label="The Code, top of page"><svg class="brand__logo" viewBox="-9.0 -1549.0 12920.0 1662.0" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Code">
+<path d="M572 -1394H974V-86L1136 -35V0H410V-35L572 -86ZM1372 -1344H174L301 -1375L65 -938L31 -945L97 -1509H117L326 -1404L198 -1430H1348L1220 -1404L1429 -1509H1448L1515 -945L1481 -938L1244 -1375Z M2398.0 -81 2553.0 -35V0H1840.0V-35L1996.0 -81V-1350L1840.0 -1394V-1430H2553.0V-1395L2398.0 -1350ZM3356.0 -81 3512.0 -35V0H2799.0V-35L2955.0 -81V-1350L2799.0 -1394V-1430H3512.0V-1395L3356.0 -1350ZM2182.0 -698V-784H3167.0V-698Z M4844.0 -1065 4797.0 -746 4844.0 -429H4815.0L4686.0 -695L4310.0 -718V-775L4686.0 -802L4815.0 -1065ZM5173.0 -994 5139.0 -983 4885.0 -1389 5049.0 -1344H4195.0V-1430H4921.0L5065.0 -1507H5082.0ZM4928.0 -47 5206.0 -467 5244.0 -458 5122.0 73H5100.0L4965.0 0H4195.0V-86H5076.0ZM3861.0 0V-35L4017.0 -81V-1350L3861.0 -1395V-1430H4419.0V0Z M7145.0 -40Q7207.0 -40 7264.0 -59.0Q7321.0 -78 7373.0 -118L7321.0 -74L7551.0 -421H7585.0L7500.0 -25Q7392.0 3 7294.0 14.5Q7196.0 26 7077.0 26Q6892.0 26 6741.0 -21.5Q6590.0 -69 6481.5 -164.5Q6373.0 -260 6315.0 -401.0Q6257.0 -542 6257.0 -728Q6257.0 -945 6359.5 -1109.0Q6462.0 -1273 6645.0 -1364.5Q6828.0 -1456 7071.0 -1456Q7159.0 -1456 7230.0 -1447.5Q7301.0 -1439 7390.0 -1419L7302.0 -1394L7447.0 -1501H7463.0L7569.0 -957L7536.0 -947L7289.0 -1332L7367.0 -1238Q7279.0 -1324 7205.0 -1354.0Q7131.0 -1384 7052.0 -1384Q6970.0 -1384 6900.5 -1353.0Q6831.0 -1322 6779.0 -1252.5Q6727.0 -1183 6698.0 -1068.5Q6669.0 -954 6669.0 -786Q6669.0 -618 6706.5 -480.5Q6744.0 -343 6809.5 -244.5Q6875.0 -146 6961.0 -93.0Q7047.0 -40 7145.0 -40Z M10709.0 -726Q10709.0 -1042 10594.0 -1193.0Q10479.0 -1344 10246.0 -1344H9984.0L9958.0 -1430H10305.0Q10564.0 -1430 10745.5 -1350.0Q10927.0 -1270 11022.5 -1117.5Q11118.0 -965 11118.0 -748Q11118.0 -501 11013.0 -334.5Q10908.0 -168 10727.5 -84.0Q10547.0 0 10319.0 0H9958.0L9984.0 -86H10276.0Q10416.0 -86 10512.5 -150.0Q10609.0 -214 10659.0 -354.5Q10709.0 -495 10709.0 -726ZM9614.0 0V-35L9770.0 -81V-1350L9614.0 -1394V-1430H10172.0V0Z M12471.0 -1065 12424.0 -746 12471.0 -429H12442.0L12313.0 -695L11937.0 -718V-775L12313.0 -802L12442.0 -1065ZM12800.0 -994 12766.0 -983 12512.0 -1389 12676.0 -1344H11822.0V-1430H12548.0L12692.0 -1507H12709.0ZM12555.0 -47 12833.0 -467 12871.0 -458 12749.0 73H12727.0L12592.0 0H11822.0V-86H12703.0ZM11488.0 0V-35L11644.0 -81V-1350L11488.0 -1395V-1430H12046.0V0Z" fill="#000000"/>
+<rect x="8000.00" y="-1440.00" width="1440.00" height="1440.00" fill="#288CFF"/><rect x="8216.00" y="-1224.00" width="1008.00" height="1008.00" fill="#FFFFFF"/><path d="M 8492.00 -1056.00 L 9062.00 -702.00 L 8792.00 -630.00 L 8930.00 -366.00 L 8798.00 -306.00 L 8660.00 -564.00 L 8492.00 -396.00 Z" fill="#288CFF"/>
+</svg></a>
+    <a class="btn btn--primary" href="https://codenewsletter.ai/subscribe?source=leadmagnets&amp;utm_medium=spec-driven-development-landing" target="_blank" rel="noopener noreferrer">Subscribe to Newsletter</a>
+  </div>
+  <div class="progress" id="progress" role="presentation"></div>
+</header>
+
+<div class="wrap layout" id="top">
+
+<nav class="rail" id="rail-sheet" aria-label="Course contents">
+  <div class="rail__sheetbar"><span class="rail__sheettitle">Contents</span><button class="rail__done" type="button">Done</button></div>
+  <ol class="rail__course">
+    <li class="rail__group is-current"><a class="rail__ghead" href="#top" aria-current="page"><span class="rail__gt">Start Here</span></a></li>
+    <li class="rail__group">
+      <a class="rail__ghead" href="module-1/"><span class="rail__gt">Module 1: Fundamentals</span></a>
+      <ol class="rail__lessons">
+        <li><a href="module-1/#lesson-1-1"><span class="rail__ln">1.1</span>What Spec-Driven Development Is, And Its Three Levels</a></li>
+        <li><a href="module-1/#lesson-1-2"><span class="rail__ln">1.2</span>Why Prompting Breaks As Codebases Grow</a></li>
+        <li><a href="module-1/#lesson-1-3"><span class="rail__ln">1.3</span>Spec, Constitution, Or Prompt: What Goes Where</a></li>
+        <li><a href="module-1/#lesson-1-4"><span class="rail__ln">1.4</span>When To Use SDD, And When To Skip It</a></li>
+      </ol>
+    </li>
+    <li class="rail__group">
+      <a class="rail__ghead" href="module-2/"><span class="rail__gt">Module 2: How To Write A Good Spec</span></a>
+      <ol class="rail__lessons">
+        <li><a href="module-2/#lesson-2-1"><span class="rail__ln">2.1</span>Start With A Brief And Let The Agent Draft The Spec</a></li>
+        <li><a href="module-2/#lesson-2-2"><span class="rail__ln">2.2</span>The Six-Section Spec Template</a></li>
+        <li><a href="module-2/#lesson-2-3"><span class="rail__ln">2.3</span>How To Set Boundaries The Agent Will Respect</a></li>
+        <li><a href="module-2/#lesson-2-4"><span class="rail__ln">2.4</span>How To Write Test Plans The Agent Cannot Misread</a></li>
+        <li><a href="module-2/#lesson-2-5"><span class="rail__ln">2.5</span>Reverse Engineering A Real Spec</a></li>
+      </ol>
+    </li>
+    <li class="rail__group">
+      <a class="rail__ghead" href="module-3/"><span class="rail__gt">Module 3: How To Run SDD End To End</span></a>
+      <ol class="rail__lessons">
+        <li><a href="module-3/#lesson-3-1"><span class="rail__ln">3.1</span>How To Get Started With GitHub Spec Kit</a></li>
+        <li><a href="module-3/#lesson-3-2"><span class="rail__ln">3.2</span>How To Use The Spike-First Workflow</a></li>
+        <li><a href="module-3/#lesson-3-3"><span class="rail__ln">3.3</span>How Microsoft Adopted SDD Across Teams</a></li>
+        <li><a href="module-3/#lesson-3-4"><span class="rail__ln">3.4</span>The Common SDD Pitfalls And How To Avoid Them</a></li>
+      </ol>
+    </li>
+    <li class="rail__group"><a class="rail__ghead" href="whats-next/"><span class="rail__gt">What’s Next</span></a></li>
+  </ol>
+</nav>
+<button class="sheetbtn" id="sheetbtn" type="button" aria-expanded="false" aria-controls="rail-sheet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg>Contents</button>
+<div class="sheet-scrim" id="sheet-scrim"></div>
+<div class="figview" id="figview" hidden><button class="figview__close" type="button">Close</button><div class="figview__scroll"><div class="figview__inner"></div></div></div>
+
+  <main id="main">
+
+    <section class="landing">
+      <h1 class="display display--xl">How Engineers at GitHub, Microsoft and Thoughtworks Run Spec-Driven Development</h1>
+      <p class="landing__sub">Write the spec before the code, and make coding agents build what you intend. Three modules take you from the definition to a full Spec Kit loop.</p>
+      <div class="landing__cta">
+        <a class="btn btn--primary" href="module-1/">Start Course</a>
+        <span class="meta">3 modules &middot; 13 lessons</span>
+      </div>
+    </section>
+    <hr class="hero-divider">
+    <section class="section section--contents" id="modules">
+      <div class="card toc toc--split">
+        <span class="eyebrow">The modules</span>
+        <ol>
+          <li><a href="module-1/"><span class="toc__n">01</span><span class="toc__t">Fundamentals Of Spec-Driven Development <span class="meta">&middot; 4 lessons</span></span></a></li>
+          <li><a href="module-2/"><span class="toc__n">02</span><span class="toc__t">How To Write A Good Spec <span class="meta">&middot; 5 lessons</span></span></a></li>
+          <li><a href="module-3/"><span class="toc__n">03</span><span class="toc__t">How To Run SDD End To End <span class="meta">&middot; 4 lessons</span></span></a></li>
+        </ol>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="wrap foot">
+    <div>
+      <span class="brand brand--sm"><svg class="brand__logo" viewBox="-9.0 -1549.0 12920.0 1662.0" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The Code">
+<path d="M572 -1394H974V-86L1136 -35V0H410V-35L572 -86ZM1372 -1344H174L301 -1375L65 -938L31 -945L97 -1509H117L326 -1404L198 -1430H1348L1220 -1404L1429 -1509H1448L1515 -945L1481 -938L1244 -1375Z M2398.0 -81 2553.0 -35V0H1840.0V-35L1996.0 -81V-1350L1840.0 -1394V-1430H2553.0V-1395L2398.0 -1350ZM3356.0 -81 3512.0 -35V0H2799.0V-35L2955.0 -81V-1350L2799.0 -1394V-1430H3512.0V-1395L3356.0 -1350ZM2182.0 -698V-784H3167.0V-698Z M4844.0 -1065 4797.0 -746 4844.0 -429H4815.0L4686.0 -695L4310.0 -718V-775L4686.0 -802L4815.0 -1065ZM5173.0 -994 5139.0 -983 4885.0 -1389 5049.0 -1344H4195.0V-1430H4921.0L5065.0 -1507H5082.0ZM4928.0 -47 5206.0 -467 5244.0 -458 5122.0 73H5100.0L4965.0 0H4195.0V-86H5076.0ZM3861.0 0V-35L4017.0 -81V-1350L3861.0 -1395V-1430H4419.0V0Z M7145.0 -40Q7207.0 -40 7264.0 -59.0Q7321.0 -78 7373.0 -118L7321.0 -74L7551.0 -421H7585.0L7500.0 -25Q7392.0 3 7294.0 14.5Q7196.0 26 7077.0 26Q6892.0 26 6741.0 -21.5Q6590.0 -69 6481.5 -164.5Q6373.0 -260 6315.0 -401.0Q6257.0 -542 6257.0 -728Q6257.0 -945 6359.5 -1109.0Q6462.0 -1273 6645.0 -1364.5Q6828.0 -1456 7071.0 -1456Q7159.0 -1456 7230.0 -1447.5Q7301.0 -1439 7390.0 -1419L7302.0 -1394L7447.0 -1501H7463.0L7569.0 -957L7536.0 -947L7289.0 -1332L7367.0 -1238Q7279.0 -1324 7205.0 -1354.0Q7131.0 -1384 7052.0 -1384Q6970.0 -1384 6900.5 -1353.0Q6831.0 -1322 6779.0 -1252.5Q6727.0 -1183 6698.0 -1068.5Q6669.0 -954 6669.0 -786Q6669.0 -618 6706.5 -480.5Q6744.0 -343 6809.5 -244.5Q6875.0 -146 6961.0 -93.0Q7047.0 -40 7145.0 -40Z M10709.0 -726Q10709.0 -1042 10594.0 -1193.0Q10479.0 -1344 10246.0 -1344H9984.0L9958.0 -1430H10305.0Q10564.0 -1430 10745.5 -1350.0Q10927.0 -1270 11022.5 -1117.5Q11118.0 -965 11118.0 -748Q11118.0 -501 11013.0 -334.5Q10908.0 -168 10727.5 -84.0Q10547.0 0 10319.0 0H9958.0L9984.0 -86H10276.0Q10416.0 -86 10512.5 -150.0Q10609.0 -214 10659.0 -354.5Q10709.0 -495 10709.0 -726ZM9614.0 0V-35L9770.0 -81V-1350L9614.0 -1394V-1430H10172.0V0Z M12471.0 -1065 12424.0 -746 12471.0 -429H12442.0L12313.0 -695L11937.0 -718V-775L12313.0 -802L12442.0 -1065ZM12800.0 -994 12766.0 -983 12512.0 -1389 12676.0 -1344H11822.0V-1430H12548.0L12692.0 -1507H12709.0ZM12555.0 -47 12833.0 -467 12871.0 -458 12749.0 73H12727.0L12592.0 0H11822.0V-86H12703.0ZM11488.0 0V-35L11644.0 -81V-1350L11488.0 -1395V-1430H12046.0V0Z" fill="#000000"/>
+<rect x="8000.00" y="-1440.00" width="1440.00" height="1440.00" fill="#288CFF"/><rect x="8216.00" y="-1224.00" width="1008.00" height="1008.00" fill="#FFFFFF"/><path d="M 8492.00 -1056.00 L 9062.00 -702.00 L 8792.00 -630.00 L 8930.00 -366.00 L 8798.00 -306.00 L 8660.00 -564.00 L 8492.00 -396.00 Z" fill="#288CFF"/>
+</svg></span>
+      <p class="dim" style="margin-top:var(--s-3);font-size:14px;max-width:34ch">Curated briefings for engineering leaders building with AI.</p>
+    </div>
+    <a class="btn btn--primary" href="https://codenewsletter.ai/subscribe?source=leadmagnets&amp;utm_medium=spec-driven-development-landing" target="_blank" rel="noopener noreferrer">Subscribe to Newsletter</a>
+  </div>
+</footer>
+
+<script>
+/* course-behaviors.js — copied verbatim from https://agentic-coding-guide.netlify.app/ on 2026-09-09.
+   Supersedes behaviors.js on course-shaped resources: same copy buttons, progress bar and
+   scroller affordance, plus rail auto-reveal, the mobile contents sheet, and the figure viewer.
+   No localStorage and no scorecard; if you add a scorecard, port verdictFor() from behaviors.js. */
+(function () {
+  'use strict';
+
+  /* --- copy-to-clipboard buttons on .codeblock ------------ */
+  document.querySelectorAll('[data-copy]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var pre = btn.parentElement.querySelector('pre');
+      if (!pre) return;
+      var text = pre.innerText;
+
+      var done = function (ok) {
+        btn.textContent = ok ? 'Copied' : 'Press ⌘C';
+        btn.dataset.state = ok ? 'done' : 'manual';
+        if (!ok) select(pre);
+        setTimeout(function () {
+          btn.textContent = 'Copy';
+          delete btn.dataset.state;
+        }, ok ? 1600 : 3000);
+      };
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(
+          function () { done(true); },
+          function () { done(execCopy(text)); }
+        );
+      } else {
+        done(execCopy(text));
+      }
+    });
+  });
+
+  /* execCommand fallback — the async Clipboard API throws inside a
+     sandboxed iframe (this page gets embedded that way in previews),
+     so this is a real fallback, not legacy politeness. */
+  function execCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0';
+    document.body.appendChild(ta);
+
+    var sel = window.getSelection();
+    var previous = sel && sel.rangeCount ? sel.getRangeAt(0) : null;
+
+    var ok = false;
+    try {
+      ta.select();
+      ta.setSelectionRange(0, text.length);
+      ok = document.execCommand('copy');
+    } catch (e) {
+      ok = false;
+    }
+
+    document.body.removeChild(ta);
+    if (sel) {
+      sel.removeAllRanges();
+      if (previous) sel.addRange(previous);
+    }
+    return ok;
+  }
+
+  function select(pre) {
+    var r = document.createRange();
+    r.selectNodeContents(pre);
+    var s = window.getSelection();
+    s.removeAllRanges();
+    s.addRange(r);
+  }
+
+  /* --- reading progress bar in the topbar ------------------ */
+  var bar = document.getElementById('progress');
+  if (bar) {
+    var tick = false;
+    var paint = function () {
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      var pct = h > 0 ? (window.scrollY / h) * 100 : 0;
+      bar.style.width = Math.min(100, Math.max(0, pct)) + '%';
+      tick = false;
+    };
+    window.addEventListener('scroll', function () {
+      if (!tick) { tick = true; requestAnimationFrame(paint); }
+    }, { passive: true });
+    paint();
+  }
+
+  /* --- rail scrollspy --------------------------------------
+     Highlights whichever section heading has passed the reading
+     line. Near the document end the final section always wins, so
+     a short last section still gets highlighted. */
+  var links = Array.prototype.slice.call(document.querySelectorAll('#rail-list a'));
+  if (links.length) {
+    var pairs = links.map(function (a) {
+      return { link: a, el: document.querySelector(a.getAttribute('href')) };
+    }).filter(function (p) { return p.el; });
+
+    /* --- RAIL-REVEAL ---------------------------------------
+       The rail lists every lesson in the course and scrolls on its
+       own axis, so the highlighted lesson is often outside its
+       visible window. Keep it centred, unless the reader is
+       scrolling the rail themselves right now. Clamping to the
+       scroll range is what lets the first and last few lessons sit
+       off-centre instead of the rail over-scrolling to centre them. */
+    var rail = document.querySelector('.rail');
+    var holdUntil = 0, selfScroll = false;
+    if (rail) {
+      rail.addEventListener('scroll', function () {
+        if (!selfScroll) holdUntil = Date.now() + 1200;
+      }, { passive: true });
+    }
+    var smooth = !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+    var reveal = function (link) {
+      if (!rail || !rail.offsetParent || Date.now() < holdUntil) return;
+      var r = rail.getBoundingClientRect(), l = link.getBoundingClientRect();
+      var want = rail.scrollTop + (l.top + l.height / 2) - (r.top + r.height / 2);
+      var max = rail.scrollHeight - rail.clientHeight;
+      want = Math.max(0, Math.min(max, want));
+      if (Math.abs(want - rail.scrollTop) < 2) return;
+      selfScroll = true;
+      setTimeout(function () { selfScroll = false; }, 700);
+      if (rail.scrollTo) rail.scrollTo({ top: want, behavior: smooth ? 'smooth' : 'auto' });
+      else rail.scrollTop = want;
+    };
+
+    var LINE = 140;
+    var spy = function () {
+      var atEnd = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+      var current = pairs[0];
+      if (atEnd) {
+        current = pairs[pairs.length - 1];
+      } else {
+        pairs.forEach(function (p) {
+          if (p.el.getBoundingClientRect().top <= LINE) current = p;
+        });
+      }
+      pairs.forEach(function (p) {
+        if (p === current) p.link.setAttribute('aria-current', 'true');
+        else p.link.removeAttribute('aria-current');
+      });
+      reveal(current.link);
+    };
+
+    var pending = false;
+    var onScroll = function () {
+      if (pending) return;
+      pending = true;
+      requestAnimationFrame(function () { pending = false; spy(); });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    spy();
+  }
+
+    /* --- FIGVIEW: tap a figure to see it large ---------------
+       On a phone a diagram that fits the column is too small to read,
+       so tapping one opens it at a legible width in a pannable,
+       pinch-zoomable overlay. Videos are excluded: they are already
+       interactive. */
+    var figview = document.getElementById('figview');
+    if (figview) {
+      var fvInner = figview.querySelector('.figview__inner');
+      var closeFig = function () {
+        figview.hidden = true;
+        document.body.classList.remove('has-sheet');
+        fvInner.innerHTML = '';
+      };
+      document.querySelectorAll('.card--flush figure').forEach(function (fig) {
+        if (fig.classList.contains('video')) return;
+        fig.addEventListener('click', function () {
+          if (window.matchMedia('(min-width: 1100px)').matches) return;
+          var src = fig.querySelector('svg, img');
+          if (!src) return;
+          var clone = src.cloneNode(true);
+          if (clone.tagName.toLowerCase() === 'svg') {
+            clone.style.width = '640px';
+            clone.style.minWidth = '640px';
+            clone.style.height = 'auto';
+          } else {
+            clone.removeAttribute('loading');
+            clone.style.width = Math.max(640, src.naturalWidth || 640) + 'px';
+            clone.style.height = 'auto';
+          }
+          fvInner.innerHTML = '';
+          fvInner.appendChild(clone);
+          figview.hidden = false;
+          document.body.classList.add('has-sheet');
+        });
+      });
+      figview.querySelector('.figview__close').addEventListener('click', closeFig);
+      figview.addEventListener('click', function (e) {
+        if (e.target === figview || e.target.classList.contains('figview__scroll')) closeFig();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !figview.hidden) closeFig();
+      });
+    }
+
+    /* --- SHEET: the rail as a bottom sheet on mobile ---------
+       The trigger, the scrim, Done, Escape and any link inside all
+       close it. Opening scrolls the current lesson into view, so the
+       sheet opens where the reader actually is. */
+    var sheet = document.querySelector('.rail');
+    var sheetBtn = document.getElementById('sheetbtn');
+    var sheetScrim = document.getElementById('sheet-scrim');
+    if (sheet && sheetBtn && sheetScrim) {
+      var setSheet = function (on) {
+        sheet.classList.toggle('is-open', on);
+        sheetScrim.classList.toggle('is-on', on);
+        document.body.classList.toggle('has-sheet', on);
+        sheetBtn.setAttribute('aria-expanded', on ? 'true' : 'false');
+        if (on) {
+          var cur = sheet.querySelector('[aria-current="true"], [aria-current="page"]');
+          if (cur) cur.scrollIntoView({ block: 'center' });
+        }
+      };
+      sheetBtn.addEventListener('click', function () {
+        setSheet(!sheet.classList.contains('is-open'));
+      });
+      sheetScrim.addEventListener('click', function () { setSheet(false); });
+      var doneBtn = sheet.querySelector('.rail__done');
+      if (doneBtn) doneBtn.addEventListener('click', function () { setSheet(false); });
+      sheet.addEventListener('click', function (e) {
+        if (e.target.closest('a')) setSheet(false);
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && sheet.classList.contains('is-open')) setSheet(false);
+      });
+    }
+
+  /* --- horizontal-scroll affordance on wide diagrams ------- */
+  document.querySelectorAll('.scroller').forEach(function (el) {
+    var sync = function () {
+      var over = el.scrollWidth - el.clientWidth;
+      el.classList.toggle('is-scrollable', over > 4);
+      el.classList.toggle('is-end', over <= 4 || el.scrollLeft >= over - 4);
+    };
+    el.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', sync);
+    if (window.ResizeObserver) new ResizeObserver(sync).observe(el);
+    sync();
+  });
+})();
+
+</script>
+<script>
+/* Tappable checklists: any .score[data-key] is its own list with its own localStorage key. */
+(function () {
+  'use strict';
+  var VERDICTS = {
+    'spec-driven-development.module-3.spike-first': function (n, total) {
+      if (n === total) return 'One feature is through the whole workflow: a commented reference, a spec with a test plan, a much longer plan, and code from a small model.';
+      if (n >= 5) return 'The plan is reviewed. If it made a new architectural call, fix the spec before the last step.';
+      if (n >= 3) return 'The spec exists. Write the test plan before the implementation plan, not after.';
+      if (n >= 1) return 'Started. Stop the spike when you have an answer, not when the code is pretty.';
+      return 'Nothing ticked yet. Spike the risky parts first.';
+    },
+    'spec-driven-development.module-3.playbook': function (n, total) {
+      if (n === total) return 'The pilot ran the whole loop. Decide where to expand next, and only where it adds clear value.';
+      if (n >= 2) return 'A lightweight spec exists. Let AI generate the artifacts from it, then review them against the spec.';
+      if (n >= 1) return 'A pilot is chosen. Keep the spec lightweight: scenarios, constraints, acceptance criteria.';
+      return 'Nothing ticked yet. Pick one feature where alignment problems are visible.';
+    },
+    'spec-driven-development.module-3.pre-handoff': function (n, total) {
+      if (n === total) return 'All six covered. Hand the spec to the agent, and run the self-verification prompt below when it is done.';
+      if (n >= 4) return 'Nearly there. The missing items are the ones that derail well-intentioned workflows.';
+      if (n >= 1) return 'Started. The first two are where most specs fall short.';
+      return 'Nothing ticked yet. Start with the prompt itself.';
+    }
+  };
+  document.querySelectorAll('.score[data-key]').forEach(function (card) {
+    var KEY = 'the-code.' + card.getAttribute('data-key') + '.v1';
+    var items = Array.prototype.slice.call(card.querySelectorAll('.score__item'));
+    var num = card.querySelector('.score__num');
+    var verdict = card.querySelector('.score__verdict');
+    var live = card.querySelector('.score__live');
+    var reset = card.querySelector('.score__reset');
+    var verdictFor = VERDICTS[card.getAttribute('data-key')] || function (n, t) { return n + ' of ' + t + ' done.'; };
+    var read = function () { try { var raw = localStorage.getItem(KEY); return raw ? JSON.parse(raw) : []; } catch (e) { return []; } };
+    var write = function (state) { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* private mode */ } };
+    var isOn = function (b) { return b.getAttribute('aria-pressed') === 'true'; };
+    var touched = false;
+    var PROMPT = verdict.textContent;
+    var render = function (announce) {
+      var n = items.filter(isOn).length;
+      num.textContent = n + ' / ' + items.length;
+      verdict.textContent = (!touched && n === 0) ? PROMPT : verdictFor(n, items.length, items);
+      if (announce && live) live.textContent = n + ' of ' + items.length + '. ' + verdict.textContent;
+    };
+    var saved = read();
+    if (saved.length) touched = true;
+    items.forEach(function (btn, i) {
+      if (saved.indexOf(i) !== -1) btn.setAttribute('aria-pressed', 'true');
+      btn.addEventListener('click', function () {
+        btn.setAttribute('aria-pressed', isOn(btn) ? 'false' : 'true');
+        touched = true;
+        write(items.reduce(function (acc, b, j) { if (isOn(b)) acc.push(j); return acc; }, []));
+        render(true);
+      });
+    });
+    if (reset) reset.addEventListener('click', function () {
+      items.forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+      write([]); touched = false; render(true);
+    });
+    render(false);
+  });
+})();
+</script>
+<script>
+/* Annotated-spec stepper: highlight the current section in the spec pane, show its note. */
+(function () {
+  'use strict';
+  document.querySelectorAll('.walk').forEach(function (walk) {
+    var pane = walk.querySelector('.walk__spec');
+    var blks = Array.prototype.slice.call(walk.querySelectorAll('.walk__blk'));
+    var notes = Array.prototype.slice.call(walk.querySelectorAll('.walk__note'));
+    var dots = Array.prototype.slice.call(walk.querySelectorAll('.walk__dots button'));
+    var prev = walk.querySelector('.walk__prev'), next = walk.querySelector('.walk__next');
+    var total = notes.length, cur = 1;
+    var show = function (n, scroll) {
+      cur = Math.max(1, Math.min(total, n));
+      var first = null;
+      blks.forEach(function (b) {
+        var on = b.getAttribute('data-step') === String(cur);
+        b.classList.toggle('is-on', on);
+        if (on && !first) first = b;
+      });
+      notes.forEach(function (x) { x.hidden = x.getAttribute('data-step') !== String(cur); });
+      dots.forEach(function (d) { d.classList.toggle('is-on', d.getAttribute('data-goto') === String(cur)); });
+      prev.disabled = cur === 1; next.disabled = cur === total;
+      if (scroll && first) pane.scrollTo({ top: Math.max(0, first.offsetTop - pane.offsetTop - 12), behavior: 'smooth' });
+    };
+    prev.addEventListener('click', function () { show(cur - 1, true); });
+    next.addEventListener('click', function () { show(cur + 1, true); });
+    dots.forEach(function (d) { d.addEventListener('click', function () { show(+d.getAttribute('data-goto'), true); }); });
+    blks.forEach(function (b) {
+      var n = +b.getAttribute('data-step');
+      if (n) b.addEventListener('click', function () { show(n, false); });
+    });
+    walk.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') { show(cur + 1, true); e.preventDefault(); }
+      if (e.key === 'ArrowLeft') { show(cur - 1, true); e.preventDefault(); }
+    });
+    show(1, false);
+  });
+})();
+</script>
+</body>
+</html>
