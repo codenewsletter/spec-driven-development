@@ -1,4 +1,4 @@
-# How Engineers at Anthropic, Microsoft, and GitHub Run Spec-Driven Development
+# How Engineers at Anthropic and OpenAI Run Spec-Driven Development
 
 The Code's guide to spec-driven development. Three modules, thirteen lessons.
 

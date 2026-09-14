@@ -17,7 +17,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 SKILL = os.path.expanduser("~/.claude/skills/the-code-lead-magnet/references")
 OUT = os.path.join(ROOT, "site")
 SLUG = "spec-driven-development"
-COURSE_TITLE = "How Engineers at Anthropic, Microsoft, and GitHub Run Spec-Driven Development"
+COURSE_TITLE = "How Engineers at Anthropic and OpenAI Run Spec-Driven Development"
 COURSE_PROMISE = ("Comprehensive guide for you to learn fundamentals of spec driven development, followed by "
                   "lessons to help you write good specs and run SDD end to end.")
 COURSE_DESC = ("A curated guide to spec-driven development for engineering teams: what a spec is, "
