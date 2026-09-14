@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Module 1: Fundamentals Of Spec-Driven Development &#8212; The Code</title>
-<meta name="description" content="This module explains what spec-driven development is, why it appeared, and how to tell when it will pay off. No tooling yet; that starts in the lessons on how to run SDD end to end.">
+<meta name="description" content="This module explains what spec-driven development is, why it is crucial, and how to tell when it will pay off.">
 <link rel="canonical" href="https://codenewsletter.ai/spec-driven-development/module-1">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Module 1: Fundamentals Of Spec-Driven Development &#8212; The Code">
-<meta property="og:description" content="This module explains what spec-driven development is, why it appeared, and how to tell when it will pay off. No tooling yet; that starts in the lessons on how to run SDD end to end.">
+<meta property="og:description" content="This module explains what spec-driven development is, why it is crucial, and how to tell when it will pay off.">
 <meta property="og:site_name" content="The Code">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#F9F9F9">
@@ -1081,6 +1081,8 @@ td.tmono { font: var(--t-2) / 1 var(--mono); color: var(--ink); white-space: now
 /* ============================================================
    7 of 7 — spec-driven-development additions
    ============================================================ */
+/* Tables use the full content column, not the prose measure. */
+.section > .tablewrap { max-width: none; }
 .section h3 { font: 600 18px / 1.35 var(--sans); letter-spacing: -.005em; margin: var(--s-8) 0 var(--s-3); max-width: var(--measure); text-wrap: balance; }
 .section ol { max-width: var(--measure); margin-bottom: var(--s-5); }
 .section > .placeholder { margin-block: var(--s-8); }
@@ -1228,7 +1230,7 @@ td.tmono { font: var(--t-2) / 1 var(--mono); color: var(--ink); white-space: now
 
     <section class="landing" id="module-1">
       <h1 class="display">Module 1: Fundamentals Of Spec-Driven Development</h1>
-      <p class="landing__sub">This module explains what spec-driven development is, why it appeared, and how to tell when it will pay off. No tooling yet; that starts in the lessons on how to run SDD end to end.</p>
+      <p class="landing__sub">This module explains what spec-driven development is, why it is crucial, and how to tell when it will pay off.</p>
       <div class="landing__cta">
         <a class="btn btn--primary" href="#lesson-1-1">Start module</a>
         <span class="meta">Module 1 of 3 &middot; 4 lessons</span>
@@ -1251,12 +1253,12 @@ td.tmono { font: var(--t-2) / 1 var(--mono); color: var(--ink); white-space: now
 <section class="section" id="lesson-1-1">
   <span class="lesson__num">1.1</span>
   <h2>What Spec-Driven Development Is, And Its Three Levels</h2>
-<p>Spec-driven development (SDD) means you write a spec before you write code with AI, and the spec is then the source of truth for both. That is Thoughtworks Distinguished Engineer Birgitta Böckeler’s working definition, after she <a href="https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html" target="_blank" rel="noopener noreferrer">tested three tools that call themselves SDD tools</a>.</p>
-<p>GitHub Principal Product Manager Den Delimarsky gives <a href="https://github.blog/ai-and-ml/generative-ai/spec-driven-development-with-ai-get-started-with-a-new-open-source-toolkit/" target="_blank" rel="noopener noreferrer">the plainest version</a>: you do not code first and document later; you start with a spec.</p>
+<p>Thoughtworks Distinguished Engineer Birgitta Böckeler <a href="https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html" target="_blank" rel="noopener noreferrer">defines</a> spec-driven development (SDD) as writing a spec before you write code with AI, with the spec then the source of truth for both.</p>
+<p>GitHub Principal Product Manager Den Delimarsky gives <a href="https://github.blog/ai-and-ml/generative-ai/spec-driven-development-with-ai-get-started-with-a-new-open-source-toolkit/" target="_blank" rel="noopener noreferrer">the plainest version</a>. You do not code first and document later; you start with a spec.</p>
 <p>The spec is a contract for how your code should behave, and your tools and agents use it to generate, test, and validate code. To maintain software is to evolve specifications, and code becomes “the last-mile approach.”</p>
 <h3 id="what-a-spec-is">What A Spec Is</h3>
 <p>A spec is a structured, behavior-oriented artifact, written in natural language, that expresses software functionality and guides AI coding agents. Each variant of SDD decides the spec’s structure, its level of detail, and where the files sit in the project.</p>
-<p>The closest definition in common use compares a spec to a Product Requirements Document (PRD). Thoughtworks <a href="https://www.thoughtworks.com/insights/blog/agile-engineering-practices/spec-driven-development-unpacking-2025-new-engineering-practices" target="_blank" rel="noopener noreferrer">argues that a spec is more</a>: it defines the external behavior of the software, not only the business requirements.</p>
+<p>The closest definition in common use compares a spec to a Product Requirements Document (PRD). Thoughtworks <a href="https://www.thoughtworks.com/insights/blog/agile-engineering-practices/spec-driven-development-unpacking-2025-new-engineering-practices" target="_blank" rel="noopener noreferrer">argues that a spec is more</a>. It defines the external behavior of the software, not only the business requirements.</p>
 <p>A spec is not a detailed prompt either. <a href="#lesson-1-3">The lesson on specs, constitutions, and prompts</a> draws both lines.</p>
 <h3 id="the-three-levels-spec-first-spec-anchored-spec-as-source">The Three Levels: Spec-First, Spec-Anchored, Spec-As-Source</h3>
 <p>Böckeler found that tools and definitions use the term at three different levels:</p>
@@ -1274,7 +1276,7 @@ td.tmono { font: var(--t-2) / 1 var(--mono); color: var(--ink); white-space: now
   </figure>
 </div>
 <p>Every SDD approach she found is spec-first. Not all aim higher, and the authors often leave the strategy to maintain the spec vague.</p>
-<p>Her test of GitHub’s <a href="https://github.com/github/spec-kit" target="_blank" rel="noopener noreferrer">Spec Kit</a> shows the gap. GitHub describes specs as living artifacts, but Spec Kit creates a branch for every spec. To Böckeler that makes it spec-first: the spec lives for one change request, not for the life of a feature.</p>
+<p>Her test of GitHub’s <a href="https://github.com/github/spec-kit" target="_blank" rel="noopener noreferrer">Spec Kit</a> shows the gap. GitHub describes specs as living artifacts, but Spec Kit creates a branch for every spec. To Böckeler that makes it spec-first, because the spec lives for one change request, not for the life of a feature.</p>
 <p>Thoughtworks describes the same split as an industry disagreement. At the radical end, code is a byproduct and the spec is the sole source of truth that needs maintenance.</p>
 <p>At the old-school end, the spec drives code generation the way tests do in test-driven development. The code remains the source of truth you maintain.</p>
 <p>Liu Shangqi, Technology Director for APAC at Thoughtworks, puts himself in the second camp.</p>
@@ -1289,8 +1291,8 @@ td.tmono { font: var(--t-2) / 1 var(--mono); color: var(--ink); white-space: now
 <section class="section" id="lesson-1-2">
   <span class="lesson__num">1.2</span>
   <h2>Why Prompting Breaks As Codebases Grow</h2>
-<p>The problem is not the agent’s coding ability. It is our approach: we treat coding agents like search engines when we should treat them like literal-minded pair programmers.</p>
-<p>That diagnosis comes from GitHub Principal Product Manager Den Delimarsky in <a href="https://github.blog/ai-and-ml/generative-ai/spec-driven-development-with-ai-get-started-with-a-new-open-source-toolkit/" target="_blank" rel="noopener noreferrer">the post that introduced Spec Kit</a>. Agents excel at pattern recognition, but they still need unambiguous instructions.</p>
+<p>GitHub Principal Product Manager Den Delimarsky <a href="https://github.blog/ai-and-ml/generative-ai/spec-driven-development-with-ai-get-started-with-a-new-open-source-toolkit/" target="_blank" rel="noopener noreferrer">argues</a> that the problem is not the agent’s coding ability. It is our approach. We treat coding agents like search engines when we should treat them like literal-minded pair programmers.</p>
+<p>Agents excel at pattern recognition, but they still need unambiguous instructions.</p>
 <p>The symptoms are familiar. You describe your goal, you get a block of code back, and it looks right but does not quite work.</p>
 <p>A vague prompt like “add photo sharing to my app” forces the model to guess at thousands of unstated requirements. Some guesses are wrong, and you find out deep into the implementation.</p>
 <h3 id="small-guesses-add-up-in-big-codebases">Small Guesses Add Up In Big Codebases</h3>
@@ -1306,24 +1308,24 @@ td.tmono { font: var(--t-2) / 1 var(--mono); color: var(--ink); white-space: now
   </figure>
 </div>
 <p>Without a shared artifact that preserves intent, every handoff becomes an interpretation step. AI can accelerate those steps, but it cannot correct ambiguity that was never resolved.</p>
-<p>When requirements, constraints, and edge cases live only in prompts, teams get fast output without a durable source of truth. Microsoft lists the results: architectural drift, code drift, inconsistent implementations, harder reviews, and rework.</p>
+<p>When requirements, constraints, and edge cases live only in prompts, teams get fast output without a durable source of truth. Microsoft lists architectural drift, code drift, inconsistent implementations, harder reviews, and rework as the results.</p>
 <h3 id="faster-developers-did-not-make-faster-teams">Faster Developers Did Not Make Faster Teams</h3>
-<p>Individual developers got faster and the gains stopped there, Microsoft Digital, the company’s IT organization, <a href="https://www.microsoft.com/insidetrack/blog/engineering-the-frontier-firm-sharing-our-ai-native-approach-to-software-development/" target="_blank" rel="noopener noreferrer">found after a year of ad-hoc AI adoption</a>.</p>
+<p>Microsoft Digital, the company’s IT organization, <a href="https://www.microsoft.com/insidetrack/blog/engineering-the-frontier-firm-sharing-our-ai-native-approach-to-software-development/" target="_blank" rel="noopener noreferrer">found after a year of ad-hoc AI adoption</a> that individual developers got faster and the gains stopped there.</p>
 <figure class="srcq">
-  <blockquote>“We quickly identified that improving the individual productivity of a developer was not resulting in a boost to team productivity That was our hard lesson.”</blockquote>
+  <blockquote>“We quickly identified that improving the individual productivity of a developer was not resulting in a boost to team productivity. That was our hard lesson.”</blockquote>
   <figcaption><b>Sudhakar Sadasivuni, Principal Group Engineering Manager at Microsoft Digital</b>. Source: <a href="https://www.microsoft.com/insidetrack/blog/engineering-the-frontier-firm-sharing-our-ai-native-approach-to-software-development/" target="_blank" rel="noopener noreferrer">Engineering the Frontier Firm</a>.</figcaption>
 </figure>
 <p>The problem was the process around the tools, not the tools. Human handoffs shaped the traditional software development lifecycle, and every handoff introduces a gap in intent.</p>
 <p>Teams that cannot consistently communicate intent discover that more coding velocity produces more variability and more rework.</p>
 <p>Mridul Verma, Senior Software Engineer at Microsoft Digital, frames the fix as velocity and vector. Velocity is how fast your development moves; vector is the direction you move in.</p>
 <figure class="srcq">
-  <blockquote>“Speed without direction is just expensive chaos, and we learned that the hard way through vibe coding After burning our hands on those traps, we realized that SDD gives you both velocity and vector.”</blockquote>
+  <blockquote>“Speed without direction is just expensive chaos, and we learned that the hard way through vibe coding. After burning our hands on those traps, we realized that SDD gives you both velocity and vector.”</blockquote>
   <figcaption><b>Mridul Verma, Senior Software Engineer at Microsoft Digital</b>. Source: <a href="https://www.microsoft.com/insidetrack/blog/engineering-the-frontier-firm-sharing-our-ai-native-approach-to-software-development/" target="_blank" rel="noopener noreferrer">Engineering the Frontier Firm</a>.</figcaption>
 </figure>
-<p>Vignesh Vijayaraghavan, Senior Software Engineer at Microsoft Digital, puts the goal in one line: “In the AI era, the best dev teams aren’t the ones that generate the most code. It’s about how they’re best able to preserve intent.”</p>
+<p>Vignesh Vijayaraghavan, Senior Software Engineer at Microsoft Digital, puts the goal in one line. “In the AI era, the best dev teams aren’t the ones that generate the most code. It’s about how they’re best able to preserve intent.”</p>
 <h3 id="the-vague-prompt-and-the-specific-prompt-side-by-side">The Vague Prompt And The Specific Prompt, Side By Side</h3>
 <p>Most agent files fail because they are too vague, the stark divide GitHub found in its study of more than 2,500 agent configuration files.</p>
-<p>Anthropic engineer Addy Osmani <a href="https://addyo.substack.com/p/how-to-write-a-good-spec-for-ai-agents" target="_blank" rel="noopener noreferrer">draws the rule from it</a>: be specific about inputs, outputs, and constraints. A vague prompt gives the agent nothing to anchor on.</p>
+<p>Anthropic engineer Addy Osmani <a href="https://addyo.substack.com/p/how-to-write-a-good-spec-for-ai-agents" target="_blank" rel="noopener noreferrer">draws the rule from it</a>. Be specific about inputs, outputs, and constraints. A vague prompt gives the agent nothing to anchor on.</p>
 <div class="pairs">
   <div class="pair">
     <div class="pair__side pair__side--before"><span class="pair__k">DOES NOT WORK</span><p>You are a helpful coding assistant.</p></div>
@@ -1342,14 +1344,14 @@ td.tmono { font: var(--t-2) / 1 var(--mono); color: var(--ink); white-space: now
   <span class="lesson__num">1.3</span>
   <h2>Spec, Constitution, Or Prompt: What Goes Where</h2>
 <p>A spec matters only to the tasks that create or change one piece of functionality. The general context for a codebase, such as rules files and high-level descriptions of the product and the code, applies in every AI coding session.</p>
-<p>Böckeler <a href="https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html" target="_blank" rel="noopener noreferrer">draws that line</a> and borrows a name for the general context from the tools: the memory bank.</p>
+<p>Böckeler <a href="https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html" target="_blank" rel="noopener noreferrer">draws that line</a> and borrows a name for the general context from the tools, the memory bank.</p>
 <p>Spec Kit calls its memory bank the constitution. It holds the high-level principles that are “immutable” and apply to every change; Böckeler describes it as a very powerful rules file.</p>
-<p>Microsoft <a href="https://www.microsoft.com/insidetrack/blog/engineering-the-frontier-firm-sharing-our-ai-native-approach-to-software-development/" target="_blank" rel="noopener noreferrer">defines what goes in it</a>: a shared set of architectural principles, governance requirements, security standards, and development limitations that everyone adheres to.</p>
+<p>Microsoft <a href="https://www.microsoft.com/insidetrack/blog/engineering-the-frontier-firm-sharing-our-ai-native-approach-to-software-development/" target="_blank" rel="noopener noreferrer">defines what goes in it</a> as a shared set of architectural principles, governance requirements, security standards, and development limitations that everyone adheres to.</p>
 <p>The team agrees on the constitution before any spec, as a team-wide exercise, so employees and agents work from the same facts.</p>
 <h3 id="a-long-prompt-is-not-a-spec">A Long Prompt Is Not A Spec</h3>
 <p>Böckeler warns that people already use “spec” as a synonym for “detailed prompt.”</p>
-<p>Thoughtworks <a href="https://www.thoughtworks.com/insights/blog/agile-engineering-practices/spec-driven-development-unpacking-2025-new-engineering-practices" target="_blank" rel="noopener noreferrer">sets the bar</a>: a spec explicitly defines the external behavior of the target software. That means input and output mappings, preconditions and postconditions, invariants, constraints, interface types, integration contracts, and sequential logic or state machines.</p>
-<p>Thoughtworks puts technical requirements in a third place: architectural style and constraints go in rules files such as <a href="https://agents.md/" target="_blank" rel="noopener noreferrer">AGENTS.md</a>. The agent then generates code from the finalized spec against those rules.</p>
+<p>Thoughtworks <a href="https://www.thoughtworks.com/insights/blog/agile-engineering-practices/spec-driven-development-unpacking-2025-new-engineering-practices" target="_blank" rel="noopener noreferrer">sets a clear bar</a>. A spec explicitly defines the external behavior of the target software. That means input and output mappings, preconditions and postconditions, invariants, constraints, interface types, integration contracts, and sequential logic or state machines.</p>
+<p>Thoughtworks puts technical requirements in a third place. Architectural style and constraints go in rules files such as AGENTS.md. The agent then generates code from the finalized spec against those rules.</p>
 <h3 id="the-spec-holds-the-what-the-plan-holds-the-how">The Spec Holds The What, The Plan Holds The How</h3>
 <p>The <a href="https://github.com/github/spec-kit" target="_blank" rel="noopener noreferrer">Spec Kit repo</a> separates the three artifacts by command. The constitution step creates or updates the project’s governing principles and development guidelines.</p>
 <p>The specify step focuses on the what and the why, not the tech stack. The plan step is where the stack, architecture, and constraints go.</p>
@@ -1385,15 +1387,15 @@ requirements</code></pre>
 <section class="section" id="lesson-1-4">
   <span class="lesson__num">1.4</span>
   <h2>When To Use SDD, And When To Skip It</h2>
-<p>For a small change, like a refactor of one file or a small adjustment to a feature, prompt the agent and review the code. SDD is overhead there, says Gregor Ojstersek, who writes the Engineering Leadership newsletter, in <a href="https://newsletter.eng-leadership.com/p/how-to-do-spec-driven-development" target="_blank" rel="noopener noreferrer">his account of how Larridin does SDD</a>.</p>
+<p>Engineering Leadership newsletter author Gregor Ojstersek <a href="https://newsletter.eng-leadership.com/p/how-to-do-spec-driven-development" target="_blank" rel="noopener noreferrer">says</a> SDD is overhead for a small change, like a refactor of one file or a small adjustment to a feature. Prompt the agent and review the code instead.</p>
 <p>On a bigger project, especially one of uncertain feasibility, the spec saves a lot of time on rewrites and reviews of bad AI-generated code. Decisions on the fly are usually worse than decisions made beforehand.</p>
-<p>Microsoft <a href="https://developer.microsoft.com/blog/spec-driven-development-ai-native-engineering/" target="_blank" rel="noopener noreferrer">reached the same conclusion across its teams</a>: not every change needs the full lifecycle, so adoption should be right-sized.</p>
+<p>Microsoft <a href="https://developer.microsoft.com/blog/spec-driven-development-ai-native-engineering/" target="_blank" rel="noopener noreferrer">reached the same conclusion across its teams</a>. Not every change needs the full lifecycle, so adoption should be right-sized.</p>
 <h3 id="if-the-work-fits-one-session-skip-the-spec">If The Work Fits One Session, Skip The Spec</h3>
-<p>Reach for a spec when the build is too big for one agent session and has to survive a split across several. Matt Pocock, who runs AI Hero, calls that <a href="https://www.aihero.dev/skills-to-spec" target="_blank" rel="noopener noreferrer">the whole trigger</a>.</p>
+<p>Matt Pocock, who runs AI Hero, <a href="https://www.aihero.dev/skills-to-spec" target="_blank" rel="noopener noreferrer">says the whole trigger</a> for a spec is a build too big for one agent session, one that has to survive a split across several.</p>
 <p>The spec exists because context windows end; it is what survives when you clear the conversation. On a single-session change it buys you nothing and adds a synthesis step where the model can drift.</p>
 <h3 id="the-bug-fix-that-became-16-acceptance-criteria">The Bug Fix That Became 16 Acceptance Criteria</h3>
-<p>Böckeler asked a spec tool to fix a small bug, and <a href="https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html" target="_blank" rel="noopener noreferrer">the workflow turned it into 4 user stories with 16 acceptance criteria</a>. Her verdict: a sledgehammer to crack a nut.</p>
-<p>One generated user story read: “As a developer, I want the transformation function to handle edge cases gracefully, so that the system remains robust when new category formats are introduced.”</p>
+<p>Böckeler asked a spec tool to fix a small bug, and <a href="https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html" target="_blank" rel="noopener noreferrer">the workflow turned it into 4 user stories with 16 acceptance criteria</a>. Her verdict was a sledgehammer to crack a nut.</p>
+<p>One generated user story read, “As a developer, I want the transformation function to handle edge cases gracefully, so that the system remains robust when new category formats are introduced.”</p>
 <p>Her second test was a 3 to 5 point feature that built on a lot of existing code. The steps and the markdown files felt like overkill, and she never finished.</p>
 <p>In the same time, she believes, plain AI-assisted coding would ship the feature and leave her more in control.</p>
 <h3 id="three-places-where-sdd-pays-off">Three Places Where SDD Pays Off</h3>
@@ -1437,7 +1439,7 @@ requirements</code></pre>
         <div>
           <span class="next__k">UP NEXT</span>
           <h3>Module 2: How To Write A Good Spec</h3>
-          <p>This is the templates module. By the end you have a spec skeleton, a boundaries block, and a real spec to copy from.</p>
+          <p>In this module, you study what a good spec is and will learn to write one yourself.</p>
         </div>
         <a class="btn btn--primary" href="../module-2/">Start Module 2</a>
       </div>

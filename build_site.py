@@ -17,9 +17,9 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 SKILL = os.path.expanduser("~/.claude/skills/the-code-lead-magnet/references")
 OUT = os.path.join(ROOT, "site")
 SLUG = "spec-driven-development"
-COURSE_TITLE = "How Engineers at GitHub, Microsoft and Thoughtworks Run Spec-Driven Development"
-COURSE_PROMISE = ("Write the spec before the code, and make coding agents build what you intend. "
-                  "Three modules take you from the definition to a full Spec Kit loop.")
+COURSE_TITLE = "How Engineers at Anthropic, Microsoft, and GitHub Run Spec-Driven Development"
+COURSE_PROMISE = ("Comprehensive guide for you to learn fundamentals of spec driven development, followed by "
+                  "lessons to help you write good specs and run SDD end to end.")
 COURSE_DESC = ("A curated guide to spec-driven development for engineering teams: what a spec is, "
                "how to write one agents cannot misread, and how to run SDD end to end with GitHub Spec Kit.")
 
@@ -61,6 +61,8 @@ def css_blocks():
 PAGE_CSS = """/* ============================================================
    7 of 7 — spec-driven-development additions
    ============================================================ */
+/* Tables use the full content column, not the prose measure. */
+.section > .tablewrap { max-width: none; }
 .section h3 { font: 600 18px / 1.35 var(--sans); letter-spacing: -.005em; margin: var(--s-8) 0 var(--s-3); max-width: var(--measure); text-wrap: balance; }
 .section ol { max-width: var(--measure); margin-bottom: var(--s-5); }
 .section > .placeholder { margin-block: var(--s-8); }
@@ -313,7 +315,14 @@ def srcq(para):
     if not m:
         return None
     quotes = re.findall(r'"([^"]+)"', para)
-    quote = " ".join(q.strip().rstrip(",") for q in quotes)
+    parts = [q.strip().rstrip(",") for q in quotes]
+    for i in range(len(parts) - 1):
+        # A fragment split by attribution: close the sentence if the next one starts a new sentence.
+        if parts[i] and parts[i][-1] not in ".!?:;" and parts[i + 1][:1].isupper():
+            parts[i] += "."
+    if parts and parts[-1][-1:] not in ".!?":
+        parts[-1] += "."
+    quote = " ".join(parts)
     who = m.group(1) or m.group(2) or "Birgitta Böckeler"
     FULL = {"Gupta": "Apoorv Gupta, Principal Software Engineer at Microsoft Digital",
             "Verma": "Mridul Verma, Senior Software Engineer at Microsoft Digital",

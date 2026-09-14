@@ -1081,6 +1081,8 @@ td.tmono { font: var(--t-2) / 1 var(--mono); color: var(--ink); white-space: now
 /* ============================================================
    7 of 7 — spec-driven-development additions
    ============================================================ */
+/* Tables use the full content column, not the prose measure. */
+.section > .tablewrap { max-width: none; }
 .section h3 { font: 600 18px / 1.35 var(--sans); letter-spacing: -.005em; margin: var(--s-8) 0 var(--s-3); max-width: var(--measure); text-wrap: balance; }
 .section ol { max-width: var(--measure); margin-bottom: var(--s-5); }
 .section > .placeholder { margin-block: var(--s-8); }

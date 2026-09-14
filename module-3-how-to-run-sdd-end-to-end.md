@@ -1,6 +1,6 @@
 # Module 3: How To Run SDD End To End
 
-Two complete workflows, one adoption story, and the failure modes to watch for. By the end you can run a spec from idea to converged code with a tool, or with a folder convention and a checklist.
+This module helps you get started with GitHub Spec Kit, shares Microsoft's adoption story, and shows how you can avoid common pitfalls with SDD.
 
 - [3.1 How To Get Started With GitHub Spec Kit](#31-how-to-get-started-with-github-spec-kit)
 - [3.2 How To Use The Spike-First Workflow](#32-how-to-use-the-spike-first-workflow)
@@ -15,7 +15,7 @@ Two complete workflows, one adoption story, and the failure modes to watch for. 
 
 [Spec Kit](https://github.com/github/spec-kit) makes the spec the center of the engineering process. You do not write a spec and set it aside; the spec drives the implementation, the checklists, and the task breakdown.
 
-The agent writes the bulk of those artifacts. Your job is to steer, and above all to verify, says GitHub Principal Product Manager Den Delimarsky, who [introduced the open source toolkit](https://github.blog/ai-and-ml/generative-ai/spec-driven-development-with-ai-get-started-with-a-new-open-source-toolkit/).
+GitHub Principal Product Manager Den Delimarsky, who [introduced the toolkit](https://github.blog/ai-and-ml/generative-ai/spec-driven-development-with-ai-get-started-with-a-new-open-source-toolkit/), says the agent writes the bulk of those artifacts. Your job is to steer, and above all to verify.
 
 Each phase has a specific job, and you do not move to the next one until you validate the current one. At each checkpoint you ask three questions:
 
@@ -45,7 +45,7 @@ Spec Kit's [quick start guide](https://github.github.io/spec-kit/quickstart.html
 
 Clarify, checklist, and analyze are optional gates. The quick start's short path for small features skips them and runs the five core commands; the full path for production runs all nine. Implement reads the checklist state before it starts, and asks you before it proceeds if any items are unchecked.
 
-Delimarsky's example of a task: instead of "build authentication," you get "create a user registration endpoint that validates email format."
+Delimarsky gives an example of a task. Instead of "build authentication," you get "create a user registration endpoint that validates email format."
 
 Microsoft Principal Software Engineer Apoorv Gupta [describes the same lifecycle](https://developer.microsoft.com/blog/spec-driven-development-ai-native-engineering/) in one line. Define intent, remove ambiguity, plan with constraints, implement with AI, and validate against the spec.
 
@@ -132,7 +132,7 @@ Expected result: `/speckit.converge` reports Converged, and the `specs/` directo
 
 ### In An Existing Codebase, Spec Only The Change
 
-You do not need to recreate an existing system from specifications before you use Spec Kit. Initialize in place, capture the rules that already matter, and run the workflow for the next bounded change. Those are the first four steps of the [Spec Kit guide for existing projects](https://github.github.io/spec-kit/guides/existing-projects.html).
+The [Spec Kit guide for existing projects](https://github.github.io/spec-kit/guides/existing-projects.html) says you do not need to recreate an existing system from specifications before you use Spec Kit. Initialize in place, capture the rules that already matter, and run the workflow for the next bounded change.
 
 First, commit or stash your work and create a branch, so every generated file shows up in a normal code review. Then initialize from the repository root.
 
@@ -148,7 +148,7 @@ Second, run the constitution command with principles that are already true for t
 /speckit.constitution Preserve public API compatibility. Follow the existing service boundaries. Every database migration must include a rollback plan. Run the repository's established unit and integration test suites.
 ```
 
-Third, choose one bounded first change: a feature, a bug fix, or a modernization slice you can review on its own. Describe the outcome and the compatibility boundaries that must stay intact.
+Third, choose one bounded first change, such as a feature, a bug fix, or a modernization slice you can review on its own. Describe the outcome and the compatibility boundaries that must stay intact.
 
 ```text
 /speckit.specify Add CSV export to the existing orders page. Preserve current filters and authorization behavior. Export only the rows visible to the signed-in user, and do not change the existing JSON API response.
@@ -169,9 +169,9 @@ Delimarsky calls feature work in an existing system [the place where SDD is most
 
 ### Write The Spec With A Top Model, Build It With A Cheap One
 
-Write the spec with a higher-tier model, then build it with a lower-tier one. A great spec gives instructions so clear that a cheaper model returns a very similar output.
+Engineering Leadership newsletter author Gregor Ojstersek [sees more companies](https://newsletter.eng-leadership.com/p/how-to-do-spec-driven-development) write the spec with a higher-tier model, then build it with a lower-tier one. A great spec gives instructions so clear that a cheaper model returns a very similar output.
 
-Gregor Ojstersek, who writes the Engineering Leadership newsletter, [sees more companies use that workflow](https://newsletter.eng-leadership.com/p/how-to-do-spec-driven-development). Token costs rise, so infinite prompting is no longer a luxury you have.
+Token costs rise, so infinite prompting is no longer a luxury you have.
 
 Larridin, a platform that measures AI adoption and AI fluency, is his example of an AI-native team. The spec is almost perfect before implementation starts, and every engineer owns a feature end to end, from spec to working code.
 
@@ -189,7 +189,7 @@ The purpose is to remove technical uncertainty that would otherwise contaminate 
 - If the whole system depends on how fast your API is, spike the hot path and measure it.
 - If you build a new view with many records, prove that the API returns them fast enough.
 
-Larridin's own case was a model to measure AI Fluency. They wrote a spike to make sure the core logic worked and was token efficient. Once they were happy with the results, the rest of the design followed: queue, monitoring, database.
+Larridin's own case was a model to measure AI Fluency. They wrote a spike to make sure the core logic worked and was token efficient. Once they were happy with the results, the rest of the design followed, with queue, monitoring, and database.
 
 Stop when you have an answer, not when the code is pretty. If you worry about variable names, function names, or file structure, that is the sign you put too much thought into implementation details.
 
@@ -201,7 +201,7 @@ Kanitkar calls this one of the most underrated parts of SDD. A working example b
 
 Larridin keeps every reference at a known location, `spec/spikes/reference/referenceName`.
 
-Comment the parts that prove the approach, and the parts that are hardcoded, lack error handling, or are off point. Kanitkar's warning: a spike without comments can be as dangerous as no spike, because the model reproduces the wrong parts alongside the right ones.
+Comment the parts that prove the approach, and the parts that are hardcoded, lack error handling, or are off point. Kanitkar warns that a spike without comments can be as dangerous as no spike, because the model reproduces the wrong parts alongside the right ones.
 
 ### Step 3: Write The Spec, Then The Test Plan
 
@@ -213,21 +213,21 @@ The structure is [the six-section template](module-2-how-to-write-a-good-spec.md
 
 ### Step 4: Create The Implementation Plan
 
-The implementation plan is the boring part: a sequence of steps that turns the spec into code, file by file and function by function. Each step is defined so clearly that the model has no chance to go a different direction.
+The implementation plan is the boring part, a sequence of steps that turns the spec into code, file by file and function by function. Each step is defined so clearly that the model has no chance to go a different direction.
 
-It is far more detailed than the spec: if the spec is around 800 lines, the plan is around 3,000.
+It is far more detailed than the spec. If the spec is around 800 lines, the plan is around 3,000.
 
 Ask the model to create the plan from the spec and output it to a separate folder, such as `plans`. Then review it in detail.
 
 If the plan makes a new architectural call, that is a signal the spec was not complete. Go back and update the spec; do not patch the plan with architecture details and leave the spec unchanged.
 
-Kanitkar's reason: the whole point of the workflow is that decisions end in the spec phase. New decisions in the last phase can silently introduce problems.
+Kanitkar's reason is that the whole point of the workflow is that decisions end in the spec phase. New decisions in the last phase can silently introduce problems.
 
 ### Step 5: Implement With A Small Model
 
 Once you are happy with the plan, the implementation is the easy part. Tell the model to create the code from the implementation plan.
 
-Any small model works; Kanitkar says even Haiku works great. How you ship is your choice: one PR, several PRs, or PRs the model creates under a convention you set.
+Any small model works; Kanitkar says even Haiku works great. How you ship is your choice, with one PR, several PRs, or PRs the model creates under a convention you set.
 
 `[Infographic: the six steps as a pipeline, spike to reference to spec to test plan to plan to code, with "top model" over the spec steps and "small model" over the build step]`
 
@@ -247,13 +247,13 @@ Goal: Run one feature through Larridin's workflow, from unknowns to code, with e
 6. Implement with a small model from the plan. Ship as one PR or several.
 ```
 
-To see what steps 3 to 5 produce, read the public pair Ojstersek links as his example. Both come from Jesse Vincent's superpowers repo: the [Worktree Rototill design spec](https://github.com/obra/superpowers/blob/main/docs/superpowers/specs/2026-04-06-worktree-rototill-design.md) and its [implementation plan](https://github.com/obra/superpowers/blob/main/docs/superpowers/plans/2026-04-06-worktree-rototill.md).
+To see what steps 3 to 5 produce, read the public pair Ojstersek links as his example. Both come from Jesse Vincent's superpowers repo, the [Worktree Rototill design spec](https://github.com/obra/superpowers/blob/main/docs/superpowers/specs/2026-04-06-worktree-rototill-design.md) and its [implementation plan](https://github.com/obra/superpowers/blob/main/docs/superpowers/plans/2026-04-06-worktree-rototill.md).
 
 The spec is about 340 lines. The plan is about 870, split into gated tasks with named files and checkbox steps. Its header names the spec it implements.
 
 Expected result: a commented reference in the repo, a spec with a test plan, a much longer plan, and code from a small model.
 
-Ojstersek's closing line: clear thinking and good judgment are the hard part, and once they are done, the code is easy.
+Ojstersek closes with the point that clear thinking and good judgment are the hard part, and once they are done, the code is easy.
 
 
 ---
@@ -262,7 +262,7 @@ Ojstersek's closing line: clear thinking and good judgment are the hard part, an
 
 ### SDD Paid Off Once It Became The Standard
 
-SDD delivered the greatest value at Microsoft once it became a standard way of working, not an optional process that individuals could bypass. The adoption has to be deliberate, Microsoft Digital, the company's IT organization, finds in its [account of a year of AI-native engineering](https://www.microsoft.com/insidetrack/blog/engineering-the-frontier-firm-sharing-our-ai-native-approach-to-software-development/). It starts with [the hard lesson](module-1-fundamentals.md#12-why-prompting-breaks-as-codebases-grow): ad-hoc adoption made individuals faster and teams no faster.
+Microsoft Digital, the company's IT organization, [finds](https://www.microsoft.com/insidetrack/blog/engineering-the-frontier-firm-sharing-our-ai-native-approach-to-software-development/) that SDD delivered the greatest value once it became a standard way of working, not an optional process that individuals could bypass. The adoption has to be deliberate. It starts with [the hard lesson](module-1-fundamentals.md#12-why-prompting-breaks-as-codebases-grow), where ad-hoc adoption made individuals faster and teams no faster.
 
 "It's not something where you decide, today I woke up and I'll start using SDD," says Apoorv Gupta, Principal Software Engineer at Microsoft Digital. "It doesn't work like that. It's a mindset shift and a learning curve."
 
@@ -294,7 +294,7 @@ Microsoft names five pillars that drive the value of SDD, from its own experienc
 
 ### How Roles Changed: Leaders, Developers, PMs, Architects
 
-The biggest change at Microsoft was behavioral: specifications stopped being documents that supported development and became the artifact that drove it. Roles coupled to the old lifecycle had to change.
+The biggest change at Microsoft was behavioral. Specifications stopped being documents that supported development and became the artifact that drove it. Roles coupled to the old lifecycle had to change.
 
 `[Infographic: four role cards, leaders, developers, PMs, architects, one line each on what changed]`
 
@@ -316,7 +316,7 @@ PMs define success criteria, resolve ambiguities, document business requirements
 
 ### Outcomes From Three Projects
 
-Gupta reports three projects in his [Microsoft for Developers post](https://developer.microsoft.com/blog/spec-driven-development-ai-native-engineering/), with one summary: spec quality equals output quality.
+Gupta reports three projects in his [Microsoft for Developers post](https://developer.microsoft.com/blog/spec-driven-development-ai-native-engineering/), and sums them up as spec quality equals output quality.
 
 - **Repeated onboarding turned into a pattern.** In a brownfield project, each new asset type needed the same UI, API, and test changes. The team captured the pattern in parameterized specs and documented only the deviations per asset. Onboarding fell from 2 to 3 weeks to a few days.
 - **A multi-service platform aligned before the build.** A large greenfield project covered attendees, facilities, security, vendors, logistics, and compliance. The constitution, specs, and plans served as the source of truth. The team improved cross-service consistency, made constraints explicit, and reduced churn as implementation scaled.
@@ -329,10 +329,10 @@ Goal: Start SDD in your organization with one pilot, and check the pilot against
 Gupta's four-step playbook, for teams that do not need to adopt the full lifecycle at once:
 
 ```
-1. Pilot: start with one feature or workflow where alignment problems are visible.
-2. Formalize: write a lightweight spec with scenarios, constraints, and acceptance criteria.
-3. Iterate: use AI to generate implementation artifacts from that shared context.
-4. Refine and scale: review the output against the spec and refine the workflow as you learn.
+1. **Pilot.** Start with one feature or workflow where alignment problems are visible.
+2. **Formalize.** Write a lightweight spec with scenarios, constraints, and acceptance criteria.
+3. **Iterate.** Use AI to generate implementation artifacts from that shared context.
+4. **Refine and scale.** Review the output against the spec and refine the workflow as you learn.
 
 Keep the process lightweight at first. Treat specs as living artifacts.
 Avoid over-specifying too early. Expand the workflow only where it adds clear value.
@@ -375,11 +375,11 @@ An effective SDD tool would at least offer a few core workflows for different si
 
 **False sense of control?** Even with all the files, templates, prompts, and checklists, the agent frequently did not follow all the instructions. Larger context windows do not mean the AI picks up everything in them.
 
-Her example: Spec Kit's research step described the existing classes her feature built on. The agent then took those descriptions as a new specification and generated the classes all over again, as duplicates. She also saw the opposite, where the agent went overboard because it followed one constitution article too eagerly.
+In her example, Spec Kit's research step described the existing classes her feature built on. The agent then took those descriptions as a new specification and generated the classes all over again, as duplicates. She also saw the opposite, where the agent went overboard because it followed one constitution article too eagerly.
 
-Her fix is the old one: small, iterative steps keep you in control, so she is skeptical of verbose up-front spec design. Small work packages almost seem counter to the idea of SDD, and an effective tool would have to cater to them anyway.
+Her fix is the old one. Small, iterative steps keep you in control, so she is skeptical of verbose up-front spec design. Small work packages almost seem counter to the idea of SDD, and an effective tool would have to cater to them anyway.
 
-**Are we making it worse?** Her closing worry is that some tools feed agents our existing workflows too literally, and amplify review overload and hallucination. The German word she reaches for is "Verschlimmbesserung": to make something worse in the attempt to make it better.
+**Are we making it worse?** Her closing worry is that some tools feed agents our existing workflows too literally, and amplify review overload and hallucination. The German word she reaches for is "Verschlimmbesserung," which means to make something worse in the attempt to make it better.
 
 ### Osmani's Six Anti-Patterns
 
@@ -389,7 +389,7 @@ Osmani lists the mistakes that derail even well-intentioned spec-driven workflow
 
 **Overlong contexts without summarization.** Dump 50 pages of documentation into a prompt and the model rarely figures it out. Use hierarchical summaries or retrieval to surface only what is relevant, because context length is not a substitute for context quality.
 
-**Skipping human review.** Willison's personal rule: "I won't commit code I couldn't explain to someone else." Code that passes tests is not therefore correct, secure, or maintainable. AI-generated code can look solid and collapse under edge cases you did not test, like a house of cards.
+**Skipping human review.** Willison's personal rule is, "I won't commit code I couldn't explain to someone else." Code that passes tests is not therefore correct, secure, or maintainable. AI-generated code can look solid and collapse under edge cases you did not test, like a house of cards.
 
 **Conflating vibe coding with production engineering.** Rapid prototyping with AI is great for exploration and throwaway projects. If you ship that code to production without rigorous specs, tests, and review, you ask for trouble, so know which mode you are in.
 
@@ -405,7 +405,7 @@ Osmani lists the mistakes that derail even well-intentioned spec-driven workflow
 
 ### Code From A Spec Still Needs CI To Catch Drift
 
-Code generation from a spec is not deterministic, so spec drift and hallucination are inherently difficult to avoid. Liu's conclusion: teams still need highly deterministic CI/CD practices to ensure software quality and safeguard their architectures.
+Code generation from a spec is not deterministic, so spec drift and hallucination are inherently difficult to avoid. Liu concludes that teams still need highly deterministic CI/CD practices to ensure software quality and safeguard their architectures.
 
 Böckeler saw the same thing when she generated code several times from one spec with the third tool she tried, and got different results. She iterated the spec to make it more specific, which reminded her how hard it is to write an unambiguous and complete specification.
 
@@ -413,7 +413,7 @@ Liu adds a second caution. Over-formalized specs can cause unnecessary trouble a
 
 ### The Spec Goes Stale, So Keep Lessons Elsewhere
 
-Nothing keeps the spec in sync once implementation starts. Pocock's view: the spec is a snapshot of what you knew at that moment, and it goes stale the first time implementation teaches you something.
+Nothing keeps the spec in sync once implementation starts. Pocock's view is that the spec is a snapshot of what you knew at that moment, and it goes stale the first time implementation teaches you something.
 
 He treats it as throwaway once the work ships. The artifacts meant to outlive it are your CONTEXT.md and your ADRs. If something learned during implementation deserves to last, it belongs there, not in an edited spec.
 

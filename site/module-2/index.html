@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Module 2: How To Write A Good Spec &#8212; The Code</title>
-<meta name="description" content="This is the templates module. By the end you have a spec skeleton, a boundaries block, and a real spec to copy from.">
+<meta name="description" content="In this module, you study what a good spec is and will learn to write one yourself.">
 <link rel="canonical" href="https://codenewsletter.ai/spec-driven-development/module-2">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Module 2: How To Write A Good Spec &#8212; The Code">
-<meta property="og:description" content="This is the templates module. By the end you have a spec skeleton, a boundaries block, and a real spec to copy from.">
+<meta property="og:description" content="In this module, you study what a good spec is and will learn to write one yourself.">
 <meta property="og:site_name" content="The Code">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#F9F9F9">
@@ -1081,6 +1081,8 @@ td.tmono { font: var(--t-2) / 1 var(--mono); color: var(--ink); white-space: now
 /* ============================================================
    7 of 7 — spec-driven-development additions
    ============================================================ */
+/* Tables use the full content column, not the prose measure. */
+.section > .tablewrap { max-width: none; }
 .section h3 { font: 600 18px / 1.35 var(--sans); letter-spacing: -.005em; margin: var(--s-8) 0 var(--s-3); max-width: var(--measure); text-wrap: balance; }
 .section ol { max-width: var(--measure); margin-bottom: var(--s-5); }
 .section > .placeholder { margin-block: var(--s-8); }
@@ -1228,7 +1230,7 @@ td.tmono { font: var(--t-2) / 1 var(--mono); color: var(--ink); white-space: now
 
     <section class="landing" id="module-2">
       <h1 class="display">Module 2: How To Write A Good Spec</h1>
-      <p class="landing__sub">This is the templates module. By the end you have a spec skeleton, a boundaries block, and a real spec to copy from.</p>
+      <p class="landing__sub">In this module, you study what a good spec is and will learn to write one yourself.</p>
       <div class="landing__cta">
         <a class="btn btn--primary" href="#lesson-2-1">Start module</a>
         <span class="meta">Module 2 of 3 &middot; 5 lessons</span>
@@ -1252,19 +1254,17 @@ td.tmono { font: var(--t-2) / 1 var(--mono); color: var(--ink); white-space: now
 <section class="section" id="lesson-2-1">
   <span class="lesson__num">2.1</span>
   <h2>Start With A Brief And Let The Agent Draft The Spec</h2>
-<p>Begin with a clear goal statement and a few requirements, then let the agent expand that brief into a detailed spec. Review the draft before any code.</p>
-<p>That is the first of five principles in Anthropic engineer Addy Osmani’s <a href="https://addyo.substack.com/p/how-to-write-a-good-spec-for-ai-agents" target="_blank" rel="noopener noreferrer">guide to specs for AI agents</a>. Agents excel at elaboration when they have a clear mission, and they drift off course without one.</p>
+<p>Anthropic engineer Addy Osmani’s <a href="https://addyo.substack.com/p/how-to-write-a-good-spec-for-ai-agents" target="_blank" rel="noopener noreferrer">first principle</a> is to begin with a clear goal statement and a few requirements, then let the agent expand that brief into a detailed spec. Review the draft before any code. Agents excel at elaboration when they have a clear mission, and they drift off course without one.</p>
 <p>Osmani asks the agent to write the result to a file such as spec.md. That file anchors the agent when a session restarts or the history grows too long.</p>
-<p>The draft usually comes back structured: an overview, a feature list, tech stack suggestions, and a data model. Review it, correct any hallucination or off-target detail, and only then move to code.</p>
-<p>Osmani’s one exception: this works well unless you already have very specific technical requirements that must hold from the start.</p>
+<p>The draft usually comes back structured, with an overview, a feature list, tech stack suggestions, and a data model. Review it, correct any hallucination or off-target detail, and only then move to code.</p>
+<p>Osmani gives one exception. This works well unless you already have very specific technical requirements that must hold from the start.</p>
 <h3 id="keep-the-brief-about-what-and-why">Keep The Brief About What And Why</h3>
-<p>A high-level brief focuses on what and why, not on how, at least at first. Ask three questions: who is the user, what do they need, and what does success look like.</p>
-<p>Osmani’s example brief for a to-do app: “Build a web app where users can track tasks (to-do list), with user accounts, a database, and a simple UI.”</p>
-<p>His success criteria in the same style: “User can add, edit, complete tasks; data is saved persistently; the app is responsive and secure.”</p>
-<p><a href="https://github.com/github/spec-kit" target="_blank" rel="noopener noreferrer">Spec Kit</a>’s docs say the same: describe what you build and why, and let the agent write the spec around user experience and success criteria. That is <a href="../module-1/#lesson-1-3">the what-and-how split</a> covered earlier.</p>
+<p>A high-level brief focuses on what and why, not on how, at least at first. Ask three questions. Who is the user, what do they need, and what does success look like?</p>
+<p>Osmani’s example brief for a to-do app reads, “Build a web app where users can track tasks (to-do list), with user accounts, a database, and a simple UI.”</p>
+<p>His success criteria follow the same style. “User can add, edit, complete tasks; data is saved persistently; the app is responsive and secure.”</p>
+<p><a href="https://github.com/github/spec-kit" target="_blank" rel="noopener noreferrer">Spec Kit</a>’s docs say the same. Describe what you build and why, and let the agent write the spec around user experience and success criteria. That is <a href="../module-1/#lesson-1-3">the what-and-how split</a> covered earlier.</p>
 <h3 id="make-the-agent-restate-the-task-list-assumptions-and-flag-ambiguity">Make The Agent Restate The Task, List Assumptions, And Flag Ambiguity</h3>
-<p>When an agent helps write the spec, force it to restate the task, list its assumptions, and flag any ambiguity.</p>
-<p>That rule comes from Larridin CTO Ameya Kanitkar, via Gregor Ojstersek’s <a href="https://newsletter.eng-leadership.com/p/how-to-do-spec-driven-development" target="_blank" rel="noopener noreferrer">account of how Larridin does SDD</a>.</p>
+<p>Larridin CTO Ameya Kanitkar <a href="https://newsletter.eng-leadership.com/p/how-to-do-spec-driven-development" target="_blank" rel="noopener noreferrer">recommends</a> that when an agent helps write the spec, you force it to restate the task, list its assumptions, and flag any ambiguity.</p>
 <p>The check catches the details the model would otherwise pick silently. Anything still open after it gets its own investigation before the spec is final. <a href="../module-3/#lesson-3-2">The lesson on the spike-first workflow</a> shows how Larridin does that.</p>
 <p>Osmani runs the same check in a read-only planning mode, such as <a href="https://claude.com/claude-code" target="_blank" rel="noopener noreferrer">Claude Code</a>’s Plan Mode. The agent analyzes the codebase and drafts the spec, but writes no code.</p>
 <p>Ask it to question you about the plan, then to review the plan for architecture, best practices, security risks, and testing strategy. Refine until there is no room for misinterpretation, and only then let the agent execute.</p>
@@ -1306,9 +1306,8 @@ Ask me about each open point. Do not choose an answer yourself.</code></pre>
 <section class="section" id="lesson-2-2">
   <span class="lesson__num">2.2</span>
   <h2>The Six-Section Spec Template</h2>
-<p>Write the smallest spec that unambiguously specifies the system. If a section feels like fluff, cut it. If a decision feels obvious, write it down anyway, because “obvious to you” is not the same as “obvious to the model.”</p>
-<p>That is Larridin CTO Ameya Kanitkar’s recommendation, via Gregor Ojstersek’s <a href="https://newsletter.eng-leadership.com/p/how-to-do-spec-driven-development" target="_blank" rel="noopener noreferrer">account of how Larridin does SDD</a>.</p>
-<p>The bar for detail: the spec should be enough to hand to a junior engineer or a small model.</p>
+<p>Larridin CTO Ameya Kanitkar <a href="https://newsletter.eng-leadership.com/p/how-to-do-spec-driven-development" target="_blank" rel="noopener noreferrer">says</a> to write the smallest spec that unambiguously specifies the system. If a section feels like fluff, cut it. If a decision feels obvious, write it down anyway, because “obvious to you” is not the same as “obvious to the model.”</p>
+<p>The bar for detail is that the spec should be enough to hand to a junior engineer or a small model.</p>
 <h3 id="the-six-sections">The Six Sections</h3>
 <div class="card card--flush diagram">
   <figure>
@@ -1320,20 +1319,20 @@ Ask me about each open point. Do not choose an answer yourself.</code></pre>
 </div>
 <p>Larridin’s reference implementation is a promoted spike; <a href="../module-3/#lesson-3-2">the lesson on the spike-first workflow</a> covers how they build one. <a href="#lesson-2-4">The lesson on test plans</a> covers the sixth section in full.</p>
 <h3 id="blend-a-prd-with-an-srs">Blend A PRD With An SRS</h3>
-<p>Treat the spec as a structured document with clear sections, not a loose pile of notes. That is the second principle from Anthropic engineer Addy Osmani in <a href="https://addyo.substack.com/p/how-to-write-a-good-spec-for-ai-agents" target="_blank" rel="noopener noreferrer">his guide to specs for AI agents</a>. A formal document gives a “literal-minded” agent a blueprint.</p>
+<p>Osmani’s <a href="https://addyo.substack.com/p/how-to-write-a-good-spec-for-ai-agents" target="_blank" rel="noopener noreferrer">second principle</a> is to treat the spec as a structured document with clear sections, not a loose pile of notes. A formal document gives a “literal-minded” agent a blueprint.</p>
 <p>Osmani blends two document types. The Product Requirements Document (PRD) side keeps the user-centric “why” behind each feature. The Software Requirements Specification (SRS) side nails down specifics such as which database or API to use.</p>
 <p>Use a consistent format. Many developers use Markdown headings or XML-like tags to mark sections, because models handle well-structured text better than free-form prose.</p>
 <p>Be specific about your stack. Say “React 18 with TypeScript, Vite, and Tailwind CSS,” not “React project,” and include versions and key dependencies. Vague specs produce vague code.</p>
 <p>Osmani warns that “minimal does not necessarily mean short.” Do not shy away from detail where it matters, but keep the spec focused.</p>
 <h3 id="six-things-every-spec-must-cover">Six Things Every Spec Must Cover</h3>
-<p>The most effective specs cover six areas. That is the pattern GitHub found in its analysis of more than 2,500 agent configuration files, which Osmani turns into a completeness checklist:</p>
+<p>GitHub’s analysis of more than 2,500 agent configuration files found that the most effective specs cover six areas. Osmani turns them into a completeness checklist:</p>
 <ol start="1">
   <li><strong>Commands.</strong> Full commands with flags, early in the file, such as <code>npm test</code>, <code>pytest -v</code>, <code>npm run build</code>. The agent references these constantly.</li>
   <li><strong>Testing.</strong> How to run tests, which framework, where test files live, and what coverage you expect.</li>
   <li><strong>Project structure.</strong> Where source code, tests, and docs live, stated explicitly.</li>
   <li><strong>Code style.</strong> One real code snippet that shows your style beats three paragraphs that describe it. Include naming conventions and formatting rules.</li>
   <li><strong>Git workflow.</strong> Branch naming, commit message format, PR requirements.</li>
-  <li><strong>Boundaries.</strong> What the agent should never touch: secrets, vendor directories, production configs, specific folders.</li>
+  <li><strong>Boundaries.</strong> What the agent should never touch, such as secrets, vendor directories, production configs, and specific folders.</li>
 </ol>
 <p>These six areas belong to <a href="../module-1/#lesson-1-3">the codebase-scoped layer</a>, and Osmani blends them into one Project Spec document. <a href="#lesson-2-3">The lesson on boundaries</a> covers them in full.</p>
 <h3 id="two-skeletons-to-copy">Two Skeletons To Copy</h3>
@@ -1383,10 +1382,9 @@ Ask me about each open point. Do not choose an answer yourself.</code></pre>
 <section class="section" id="lesson-2-3">
   <span class="lesson__num">2.3</span>
   <h2>How To Set Boundaries The Agent Will Respect</h2>
-<p>A good spec anticipates where the agent might go wrong and sets up guardrails. It also uses what you know, such as domain knowledge, edge cases, and gotchas, so the agent does not operate in a vacuum.</p>
-<p>Addy Osmani of Anthropic’s fourth principle, in <a href="https://addyo.substack.com/p/how-to-write-a-good-spec-for-ai-agents" target="_blank" rel="noopener noreferrer">his guide to specs for AI agents</a>, says the spec is both coach and referee.</p>
+<p>Osmani’s <a href="https://addyo.substack.com/p/how-to-write-a-good-spec-for-ai-agents" target="_blank" rel="noopener noreferrer">fourth principle</a> is that the spec is both coach and referee. A good spec anticipates where the agent might go wrong and sets up guardrails. It also uses what you know, such as domain knowledge, edge cases, and gotchas, so the agent does not operate in a vacuum.</p>
 <h3 id="the-three-tiers-always-ask-first-never">The Three Tiers: Always, Ask First, Never</h3>
-<p>The most effective specs use a three-tier boundary system rather than a flat list of do’s and don’ts. That is GitHub’s finding from its study of 2,500 agent files, as Osmani reports it.</p>
+<p>GitHub’s study of 2,500 agent files found that the most effective specs use a three-tier boundary system rather than a flat list of do’s and don’ts.</p>
 <p>The tiers tell the agent when to proceed, when to pause, and when to stop:</p>
 <ul>
   <li><strong>✅ Always do</strong></li>
@@ -1403,7 +1401,7 @@ Ask me about each open point. Do not choose an answer yourself.</code></pre>
   </figure>
 </div>
 <h3 id="put-your-domain-knowledge-in-the-spec">Put Your Domain Knowledge In The Spec</h3>
-<p>Your spec should reflect insights that only an experienced developer, or someone with context, would know. Osmani’s phrase for it: pour your mentorship into the spec.</p>
+<p>Your spec should reflect insights that only an experienced developer, or someone with context, would know. Osmani’s phrase for it is to pour your mentorship into the spec.</p>
 <p>If you build an e-commerce agent and you know that products and categories have a many-to-many relationship, state that clearly. Do not assume the agent will infer it, because it might not.</p>
 <p>If a library is notoriously tricky, mention the pitfalls to avoid. The spec can hold advice such as “when using library X, watch out for the memory leak issue in version Y and apply this workaround.”</p>
 <p>Encode your style preferences too, such as “use functional components, not class components in React,” and the agent will emulate your style.</p>
@@ -1442,12 +1440,11 @@ Ask me about each open point. Do not choose an answer yourself.</code></pre>
 <section class="section" id="lesson-2-4">
   <span class="lesson__num">2.4</span>
   <h2>How To Write Test Plans The Agent Cannot Misread</h2>
-<p>Test-driven development and spec-driven development fit together. Once you know what the system does, write the test plan before the implementation plan, not after.</p>
-<p>Larridin CTO Ameya Kanitkar’s rule, via Gregor Ojstersek’s <a href="https://newsletter.eng-leadership.com/p/how-to-do-spec-driven-development" target="_blank" rel="noopener noreferrer">account of how Larridin does SDD</a>, makes the test plan part of the spec. Go over it and adjust it if something is wrong or missing.</p>
+<p>Larridin CTO Ameya Kanitkar <a href="https://newsletter.eng-leadership.com/p/how-to-do-spec-driven-development" target="_blank" rel="noopener noreferrer">makes the test plan part of the spec</a>. Once you know what the system does, write the test plan before the implementation plan, not after. Test-driven development and spec-driven development fit together. Go over it and adjust it if something is wrong or missing.</p>
 <p>There is no need to implement the tests yet. List them, name each one, and specify inputs and expected outputs. That list is a clear definition of done, and you measure the implementation plan against it.</p>
 <p>Watch out for “ambiguous tests.” The two pairs at the end of this lesson show Ojstersek’s fix.</p>
 <h3 id="keep-what-bdd-taught-plain-language-and-givenwhenthen">Keep What BDD Taught: Plain Language And Given/When/Then</h3>
-<p>Experience from behavior-driven development (BDD) is still valid, and this new technology should not change much in this area. That is the view of Thoughtworks Technology Director Liu Shangqi in <a href="https://www.thoughtworks.com/insights/blog/agile-engineering-practices/spec-driven-development-unpacking-2025-new-engineering-practices" target="_blank" rel="noopener noreferrer">his analysis of spec-driven development</a>.</p>
+<p>Thoughtworks Technology Director Liu Shangqi <a href="https://www.thoughtworks.com/insights/blog/agile-engineering-practices/spec-driven-development-unpacking-2025-new-engineering-practices" target="_blank" rel="noopener noreferrer">argues</a> that experience from behavior-driven development (BDD) is still valid, and this new technology should not change much in this area.</p>
 <p>Specifications should still:</p>
 <ul>
   <li>Use domain-oriented ubiquitous language to describe business intent, not tech-bound implementations.</li>
@@ -1457,9 +1454,9 @@ Ask me about each open point. Do not choose an answer yourself.</code></pre>
 </ul>
 <p>Liu adds that the spec-by-example we use in BDD is essentially the few-shot prompt technique.</p>
 <h3 id="put-tests-in-the-success-criteria-or-in-a-conformance-suite">Put Tests In The Success Criteria, Or In A Conformance Suite</h3>
-<p>Incorporate a test plan, or even actual tests, into your spec and prompt flow. In the spec’s success criteria, say “these sample inputs should produce these outputs” or “the following unit tests should pass.”</p>
-<p>Addy Osmani, an engineer at Anthropic, gives that advice in <a href="https://addyo.substack.com/p/how-to-write-a-good-spec-for-ai-agents" target="_blank" rel="noopener noreferrer">his guide to specs for AI agents</a>. He also relays Simon Willison’s case for conformance suites: language-independent tests, often YAML-based, that any implementation must pass. A conformance suite is more rigorous than ad-hoc unit tests, because it derives directly from the spec, and you can reuse it across implementations.</p>
-<p>Willison’s summary, via Osmani: a robust test suite is “like giving the agents superpowers,” because they can validate and iterate quickly when tests fail.</p>
+<p>Anthropic engineer Addy Osmani <a href="https://addyo.substack.com/p/how-to-write-a-good-spec-for-ai-agents" target="_blank" rel="noopener noreferrer">advises</a> that you incorporate a test plan, or even actual tests, into your spec and prompt flow. In the spec’s success criteria, say “these sample inputs should produce these outputs” or “the following unit tests should pass.”</p>
+<p>He also relays Simon Willison’s case for conformance suites, which are language-independent tests, often YAML-based, that any implementation must pass. A conformance suite is more rigorous than ad-hoc unit tests, because it derives directly from the spec, and you can reuse it across implementations.</p>
+<p>Willison sums it up. A robust test suite is “like giving the agents superpowers,” because they can validate and iterate quickly when tests fail.</p>
 <h3 id="precise-tests-and-a-scenario-skeleton-to-copy">Precise Tests, And A Scenario Skeleton To Copy</h3>
 <p>Ojstersek’s two pairs, side by side:</p>
 <div class="pairs">
@@ -1602,14 +1599,14 @@ Ask me about each open point. Do not choose an answer yourself.</code></pre>
       <button class="btn btn--ghost btn--sm walk__prev" type="button" aria-label="Previous section">&larr; Prev</button>
       <button class="btn btn--primary btn--sm walk__next" type="button" aria-label="Next section">Next &rarr;</button>
     </div>
-    <div class="walk__note" data-step="1"><span class="walk__k">SECTION 1 OF 11</span><h4>Title</h4><p>One sentence states what changes and into what: 714 vendored files become one file with no dependencies. The agent knows the problem and the shape of done before it reads anything else. This is Larridin’s problem statement, in one paragraph.</p></div>
-    <div class="walk__note" data-step="2" hidden><span class="walk__k">SECTION 2 OF 11</span><h4>Motivation</h4><p>The section names the risk, unpatched third-party code, and then sizes it: low, on a localhost-only server. That size tells the agent how much to build. Without it, an agent treats every risk as critical and over-engineers the fix.</p></div>
+    <div class="walk__note" data-step="1"><span class="walk__k">SECTION 1 OF 11</span><h4>Title</h4><p>One sentence states what changes and into what, as 714 vendored files become one file with no dependencies. The agent knows the problem and the shape of done before it reads anything else. This is Larridin’s problem statement, in one paragraph.</p></div>
+    <div class="walk__note" data-step="2" hidden><span class="walk__k">SECTION 2 OF 11</span><h4>Motivation</h4><p>The section names the risk, unpatched third-party code, and then sizes it as low, on a localhost-only server. That size tells the agent how much to build. Without it, an agent treats every risk as critical and over-engineers the fix.</p></div>
     <div class="walk__note" data-step="3" hidden><span class="walk__k">SECTION 3 OF 11</span><h4>Architecture</h4><p>The spec fixes one file, a line budget, four built-ins, the RFC, three length encodings, and four opcodes. Each is a decision the agent would otherwise make on its own, and silently. Written down, they cannot drift between sessions.</p></div>
     <div class="walk__note" data-step="4" hidden><span class="walk__k">SECTION 4 OF 11</span><h4>Deliberately skipped</h4><p>Four features the server will not have, with the reason and the proof that the omission is safe. This is where the spec stops the agent from building a full WebSocket library. The non-goals sit next to the section they apply to.</p></div>
     <div class="walk__note" data-step="5" hidden><span class="walk__k">SECTION 5 OF 11</span><h4>Configuration and Startup Sequence</h4><p>Every variable carries its default, and the one non-obvious startup step carries its reason. Obvious to you is not obvious to the model. A missing default is a guess the agent makes for you.</p></div>
     <div class="walk__note" data-step="6" hidden><span class="walk__k">SECTION 6 OF 11</span><h4>Error Handling</h4><p>Each line pairs a condition with one response, so the agent can test each case. The last line is a decision not to build shutdown logic. A precise no is as useful as a precise yes.</p></div>
     <div class="walk__note" data-step="7" hidden><span class="walk__k">SECTION 7 OF 11</span><h4>What Changes and What Stays the Same</h4><p>The table lists what goes and the one file that replaces it. The list names six files the agent must not touch, and the one exception. These boundaries make a brownfield change safe.</p></div>
-    <div class="walk__note" data-step="8" hidden><span class="walk__k">SECTION 8 OF 11</span><h4>Platform Compatibility</h4><p>Three facts only someone with context knows: which built-ins are cross-platform, where the file watcher is reliable, and that the scripts need bash. Without them, the agent finds out in production.</p></div>
+    <div class="walk__note" data-step="8" hidden><span class="walk__k">SECTION 8 OF 11</span><h4>Platform Compatibility</h4><p>Only someone with context knows these three facts, which built-ins are cross-platform, where the file watcher is reliable, and that the scripts need bash. Without them, the agent finds out in production.</p></div>
     <div class="walk__note" data-step="9" hidden><span class="walk__k">SECTION 9 OF 11</span><h4>Testing</h4><p>Two test files, and what each covers. The test-only dependency is named as test-only, so the agent does not ship it. This list is the definition of done.</p></div>
     <div class="walk__note" data-step="10" hidden><span class="walk__k">SECTION 10 OF 11</span><h4>Each Section, And The Rule It Applies</h4></div>
     <div class="walk__note" data-step="11" hidden><span class="walk__k">SECTION 11 OF 11</span><h4>The Heading Outline To Copy</h4><p>The outline of the original, to reuse as a skeleton for a brownfield spec:</p></div>
@@ -1635,7 +1632,7 @@ Ask me about each open point. Do not choose an answer yourself.</code></pre>
         <div>
           <span class="next__k">UP NEXT</span>
           <h3>Module 3: How To Run SDD End To End</h3>
-          <p>Two complete workflows, one adoption story, and the failure modes to watch for. By the end you can run a spec from idea to converged code with a tool, or with a folder convention and a checklist.</p>
+          <p>This module helps you get started with GitHub Spec Kit, shares Microsoft’s adoption story, and shows how you can avoid common pitfalls with SDD.</p>
         </div>
         <a class="btn btn--primary" href="../module-3/">Start Module 3</a>
       </div>
